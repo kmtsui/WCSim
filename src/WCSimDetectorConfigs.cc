@@ -481,15 +481,24 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_mPMTGeometry()
 	nID_PMTs = 19;
 	config_file = wcsimdir_path+"/mPMT-configfiles/mPMTconfig_19_nuPrism_3ring.txt"; // for smaller reflector, use: mPMTconfig_19_nuPrism.txt (hex)
 
-	WCIDHeight               = 3.38*CLHEP::m;
-    	WCIDDiameter             = 3.696*CLHEP::m;
-    	WCIDVerticalPosition     = 0.;
+	WCIDHeight               = 3.38*CLHEP::m; //original height
+    WCIDDiameter             = 3.696*CLHEP::m; //original diameter
+    
+
+	// Dimensions from CAD drwaings 04/21
+	// Change WCBarrelNumPMTHorizontal correcponding to 18 or 16 column dimensions. Height is same for both designs. - Lauren
+	//WCIDHeight               = 3.539*CLHEP::m; // mPMT backplate to backplate
+	//WCIDDiameter             = 3.439*CLHEP::m; // mPMT backplate to backplate 18col
+	//WCIDDiameter             = 3.427*CLHEP::m; // mPMT backplate to backplate 16col
+
+	WCIDVerticalPosition     = 0.;
 	
 	WCBarrelPMTOffset     = 300.*CLHEP::mm;
     WCPMTperCellHorizontal = 1.0; // 1 per phi
     WCPMTperCellVertical   = 1.0;
 
-    WCBarrelNumPMTHorizontal = 18;
+    WCBarrelNumPMTHorizontal = 18; //18col design - original
+	//WCBarrelNumPMTHorizontal = 16; //16co design 
     WCBarrelNRings        = 5;
     //WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
     WCCapPMTSpacing       = 0.58*CLHEP::m;
