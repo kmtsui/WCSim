@@ -494,6 +494,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructMultiPMT(G4String PMTName, 
   if(mPMT_vessel_cyl_height >= 0.01*mm){
     pmt_z_offset = cap_position_offset+mPMT_vessel_cyl_height/2; // and same for inner structure
   }
+  G4cout<<"pmt_z_offset = "<<pmt_z_offset<<G4endl;
   G4VPVParameterisation* pmtParam_id =
     new WCSimMultiPMTParameterisation(
 				      nIDPMTs,	        // NoPMTs

@@ -120,6 +120,7 @@ public:
   G4int    UsePMT_Coll_Eff(){return PMT_Coll_Eff;}
 
   G4double GetPMTSize1() {return WCPMTSize;}
+  G4double GetPMTSize2() {return WCPMTSize2;}
 
   G4double GetPMTQE(G4String,G4double, G4int, G4double, G4double, G4double);
   G4double GetPMTCollectionEfficiency(G4double theta_angle, G4String CollectionName) { return GetPMTPointer(CollectionName)->GetCollectionEfficiency(theta_angle); };

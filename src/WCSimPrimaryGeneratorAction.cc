@@ -550,6 +550,52 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         }
       }
 
+      // special configuration to study PMT efficiency
+      // shoot photons from a circular plane that is close to the PMT
+      // simply check the number of p.e. in that PMT to approximate the efficiency
+      if (injectorOn==-100||injectorOn==-200)
+      {
+        std::vector<WCSimPmtInfo*>* fpmts = injectorOn==-100 ? myDetector->Get_Pmts(): myDetector->Get_Pmts2();
+        WCSimPmtInfo* pmtinfo = (WCSimPmtInfo*)fpmts->at( fpmts->size()-1 );
+        G4ThreeVector pmtpos(pmtinfo->Get_transx()*cm,pmtinfo->Get_transy()*cm,pmtinfo->Get_transz()*cm);
+        G4ThreeVector pmtdir(pmtinfo->Get_orienx(),pmtinfo->Get_orieny(),pmtinfo->Get_orienz());
+        double pmtoffset = injectorOn==-100 ? 87.6 : 31.315283;
+        pmtpos = pmtpos+pmtoffset*pmtdir;
+        G4ThreeVector tmpdir(1./sqrt(2),1./sqrt(2),0);
+        G4ThreeVector dirxold = pmtdir.cross(tmpdir);
+        G4ThreeVector diryold = pmtdir.cross(dirxold);
+        pmtdir.rotate(dirxold,acos(injectorangle));
+        G4double pmtsize = injectorOn==-100 ? myDetector->GetPMTSize1()*cm : myDetector->GetPMTSize2()*cm;
+        //G4ThreeVector sourcePos = pmtpos+50*cm*pmtdir;
+        G4ThreeVector sourcePos = pmtpos+2*pmtsize*pmtdir;
+        
+
+        MyGPS->AddaSource(1.);	
+        G4ParticleDefinition* pd = particleTable->FindParticle("opticalphoton");
+        MyGPS->SetParticleDefinition(pd);
+        MyGPS->GetCurrentSource()->GetEneDist()->SetEnergyDisType("Mono");
+        MyGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(photoEnergy);
+
+        G4ThreeVector dirx = pmtdir.cross(tmpdir);
+        G4ThreeVector diry = pmtdir.cross(dirx);
+        MyGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Plane");
+        MyGPS->GetCurrentSource()->GetPosDist()->SetPosDisShape("Circle");
+        MyGPS->GetCurrentSource()->GetPosDist()->SetRadius(pmtsize);
+        MyGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(sourcePos);
+        MyGPS->GetCurrentSource()->GetPosDist()->SetPosRot1(dirx);
+        MyGPS->GetCurrentSource()->GetPosDist()->SetPosRot2(diry);
+        //MyGPS->GetCurrentSource()->GetPosDist()->SetVerbosity(1);
+
+        //G4cout<<"Position = "<<pmtpos[0]<<", "<<pmtpos[1]<<", "<<pmtpos[2]<<G4endl;
+        //G4cout<<"Direction = "<<pmtdir[0]<<", "<<pmtdir[1]<<", "<<pmtdir[2]<<G4endl;
+        //G4cout<<"pmtsize = "<<pmtsize<<G4endl;
+
+        MyGPS->GetCurrentSource()->GetAngDist()->SetAngDistType("planar");
+        MyGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(-pmtdir);
+        //MyGPS->GetCurrentSource()->GetAngDist()->SetVerbosity(1);
+        MyGPS->GetCurrentSource()->SetNumberOfParticles(nPhotonsPerInjectors);
+      }
+
       MyGPS->GeneratePrimaryVertex(anEvent);
       
       G4ThreeVector P   =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();

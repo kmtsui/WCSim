@@ -53,6 +53,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructPMT(G4String PMTName, G4Str
   expose = PMT->GetExposeHeight();
   radius = PMT->GetRadius();                            //r at height = expose
   glassThickness = PMT->GetPMTGlassThickness();
+  G4cout<<"glassThickness = "<<glassThickness<<G4endl;
 
   //sphereRadius R: radius of curvature, based on spherical approx near exposeHeight
   //if radius of spherical cap at exposeHeight = PMTradius r (eg. 20"/2)
@@ -280,6 +281,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructPMT(G4String PMTName, G4Str
                             CollectionName,
                             0,0,0);
 
+  G4cout<<"physiGlassFaceWCPMT place = "<<-1.0*PMTOffset+position_z_offset<<std::endl;
   G4VPhysicalVolume* physiGlassFaceWCPMT =
       new G4PVPlacement(0,
                         G4ThreeVector(0, 0, -1.0*PMTOffset+position_z_offset),
