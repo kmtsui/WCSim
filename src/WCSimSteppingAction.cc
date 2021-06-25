@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "WCSimSteppingAction.hh"
+#include "WCSimTrackInformation.hh"
 
 #include "G4Track.hh"
 #include "G4VProcess.hh"
@@ -40,6 +41,26 @@ void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
 
   G4StepPoint* thePostPoint = aStep->GetPostStepPoint();
   G4VPhysicalVolume* thePostPV = thePostPoint->GetPhysicalVolume();
+
+  // Change photon track starting position to last point of scattering
+  if (track->GetDefinition()==G4OpticalPhoton::OpticalPhotonDefinition()) {
+    const G4VProcess* pds = thePostPoint->GetProcessDefinedStep();
+    if (pds->GetProcessName() == "OpRayleigh") 
+    {
+      WCSimTrackInformation* trackinfo = (WCSimTrackInformation*)(aStep->GetTrack()->GetUserInformation());
+      if (trackinfo) {
+          //std::cout<<"OpRayleigh happens! "<<std::endl;
+          trackinfo->SetPhotonStartPos(aStep->GetTrack()->GetPosition());
+      } else {
+        trackinfo = new WCSimTrackInformation();
+        trackinfo->SetPrimaryParentID(track->GetTrackID());  
+        trackinfo->SetPhotonStartTime(track->GetGlobalTime());
+        trackinfo->SetPhotonStartPos(aStep->GetTrack()->GetPosition());
+        trackinfo->SetPhotonStartDir(track->GetVertexMomentumDirection());
+        track->SetUserInformation(trackinfo);
+      }
+    }
+  }
 
   //G4OpBoundaryProcessStatus boundaryStatus=Undefined;
   //static G4ThreadLocal G4OpBoundaryProcess* boundary=NULL;  //doesn't work and needs #include tls.hh from Geant4.9.6 and beyond
