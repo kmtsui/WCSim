@@ -491,8 +491,8 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_mPMTGeometry()
 
     WCBarrelNumPMTHorizontal = 18;
     WCBarrelNRings        = 5;
-	WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
-    //WCCapPMTSpacing       = 0.58*CLHEP::m;
+	//WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
+    WCCapPMTSpacing       = 0.58*CLHEP::m;
 	//	WCCapPMTSpacing       = 0.7*CLHEP::m; //test
     WCCapEdgeLimit        = 1.551*m; 
     WCBlackSheetThickness = 2.0*cm;    // deprecate soon.
@@ -533,7 +533,7 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_18c_mPMTGeometry()
 	nID_PMTs = 19;
 	config_file = wcsimdir_path+"/mPMT-configfiles/mPMTconfig_19_nuPrism_3ring.txt"; // for smaller reflector, use: mPMTconfig_19_nuPrism.txt (hex)
 	WCIDHeight               = 3.539*CLHEP::m; // From CAD drawing backplate to backplate
-	WCIDDiameter             = 3.439*CLHEP::m; // 18c from CAD drawing backplate to backplate
+	WCIDDiameter             = 3.501*CLHEP::m; // 18c from CAD drawing backplate to backplate
 	WCIDVerticalPosition     = 0.;
 	
 	WCBarrelPMTOffset     = 300.*CLHEP::mm;
@@ -542,8 +542,8 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_18c_mPMTGeometry()
 
     WCBarrelNumPMTHorizontal = 18;
     WCBarrelNRings        = 5;
-	WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
-    //WCCapPMTSpacing       = 0.58*CLHEP::m;
+	//WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
+    WCCapPMTSpacing       = 0.58*CLHEP::m;
 	//	WCCapPMTSpacing       = 0.7*CLHEP::m; //test
     WCCapEdgeLimit        = 1.551*m; 
     WCBlackSheetThickness = 2.0*cm;    // deprecate soon.
@@ -586,7 +586,7 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_16c_mPMTGeometry()
 
 	
 	WCIDHeight               = 3.539*CLHEP::m; // From CAD drawing backplate to backplate
-	WCIDDiameter             = 3.427*CLHEP::m; // 16c from CAD drawing backplate to backplate
+	WCIDDiameter             = 3.441*CLHEP::m; // 16c from CAD drawing backplate to backplate
 	WCIDVerticalPosition     = 0.;
 	
 	WCBarrelPMTOffset     = 300.*CLHEP::mm;
@@ -595,8 +595,8 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_16c_mPMTGeometry()
 
 	WCBarrelNumPMTHorizontal = 16; // for reduced 16c diam
     WCBarrelNRings        = 5;
-	WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
-    //WCCapPMTSpacing       = 0.58*CLHEP::m;
+	//WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
+    WCCapPMTSpacing       = 0.58*CLHEP::m;
 	//	WCCapPMTSpacing       = 0.7*CLHEP::m; //test
     WCCapEdgeLimit        = 1.551*m; 
     WCBlackSheetThickness = 2.0*cm;    // deprecate soon.
@@ -639,7 +639,7 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_16cShort_mPMTGeometry()
 
 	
 	WCIDHeight               = 2.739*CLHEP::m; // 16c from CAD but with 1 row of mPMTs removed
-	WCIDDiameter             = 3.427*CLHEP::m; // 16c from CAD drawing backplate to backplate
+	WCIDDiameter             = 3.441*CLHEP::m; // 16c from CAD drawing backplate to backplate
 	WCIDVerticalPosition     = 0.;
 	
 	WCBarrelPMTOffset     = 300.*CLHEP::mm;
@@ -648,8 +648,8 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_16cShort_mPMTGeometry()
 
 	WCBarrelNumPMTHorizontal = 16; // for reduced 16c diam
     WCBarrelNRings        = 4;
-	WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
-    //WCCapPMTSpacing       = 0.58*CLHEP::m;
+	//WCCapPMTSpacing       = (pi*WCIDDiameter/WCBarrelNumPMTHorizontal);
+    WCCapPMTSpacing       = 0.58*CLHEP::m;
 	//	WCCapPMTSpacing       = 0.7*CLHEP::m; //test
     WCCapEdgeLimit        = 1.551*m; 
     WCBlackSheetThickness = 2.0*cm;    // deprecate soon.
