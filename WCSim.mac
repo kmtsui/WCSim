@@ -70,7 +70,7 @@
 #grab the other DAQ options (thresholds, timing windows, etc.)
 /control/execute macros/daq.mac
 
-# setseed
+# setseed - option to change seeds
 #/random/setSeeds 2 1
 /WCSim/random/seed 4
 
@@ -153,7 +153,7 @@
 /Tracking/fractionOpticalPhotonsToDraw 0.0
 
 ## change the name of the output root file, default = wcsim.root
-/WCSimIO/RootFile WCTE16c5r_test_1_e-_500MeV_dir-1_0_0pos165_0_0.root
+/WCSimIO/RootFile wcsim.root
 
 ## Boolean to select whether to save the NEUT RooTracker vertices in the output file, provided you used
 ## a NEUT vector file as input
