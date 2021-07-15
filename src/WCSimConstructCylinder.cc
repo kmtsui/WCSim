@@ -1324,7 +1324,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
       xoffset = i*WCCapPMTSpacing + WCCapPMTSpacing*0.5;
       yoffset = j*WCCapPMTSpacing + WCCapPMTSpacing*0.5;
       // For WCTE (NuPRISMBeamTest_mPMT Geometry)
-      if (isNuPrismBeamTest){
+      if (isNuPrismBeamTest || isNuPrismBeamTest_18c || isNuPrismBeamTest_16c || isNuPrismBeamTest_16cShort){
       	xoffset = i*WCCapPMTSpacing;
       	yoffset = j*WCCapPMTSpacing;
       }
