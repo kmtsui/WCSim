@@ -55,6 +55,9 @@ public:
   G4ThreeVector GetPhotonStartDir() {return photonStartDir;}
 
   void ResetPhotonHistory() { nReflection=0; nRayScattering=0; nMieScattering=0; }
+  void AddRaySct() { nRayScattering++; }
+  void AddMieSct() { nMieScattering++; }
+  void AddReflec() { nReflection++; }
 
   inline void *operator new(size_t);
   inline void operator delete(void *aTrackInfo);
