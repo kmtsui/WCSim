@@ -21,14 +21,23 @@ private:
   G4ThreeVector  photonStartPos;
   G4ThreeVector  photonStartDir;
 
+  // Tracking photon reflection and scattering history
+  G4int nReflection;
+  G4int nRayScattering;
+  G4int nMieScattering;
+
 public:
-  WCSimTrackInformation() : saveit(false), primaryParentID(-99) {}  //TF: initialize to value with NO meaning instead of DN
+  WCSimTrackInformation() : saveit(false), primaryParentID(-99), nReflection(0), nRayScattering(0), nMieScattering(0) {}  //TF: initialize to value with NO meaning instead of DN
   WCSimTrackInformation(const WCSimTrackInformation* aninfo) {
       saveit = aninfo->saveit;
       primaryParentID = aninfo->primaryParentID;
       photonStartTime = aninfo->photonStartTime;
       photonStartPos = aninfo->photonStartPos;
       photonStartDir = aninfo->photonStartDir;
+
+      nReflection = 0;
+      nRayScattering = 0;
+      nMieScattering = 0;
   }
   virtual ~WCSimTrackInformation() {}
   WCSimTrackInformation(const G4Track* );
