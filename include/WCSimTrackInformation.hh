@@ -58,6 +58,7 @@ public:
   void AddRaySct() { nRayScattering++; }
   void AddMieSct() { nMieScattering++; }
   void AddReflec() { nReflection++; }
+  std::vector<G4int> GetPhotonHistory() { std::vector<G4int> photonHistory{ nReflection, nRayScattering, nMieScattering }; return photonHistory; }
 
   inline void *operator new(size_t);
   inline void operator delete(void *aTrackInfo);

@@ -91,8 +91,15 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
     WCSimTrackInformation* anInfo;
     if (aTrack->GetUserInformation())
       anInfo = (WCSimTrackInformation*)(aTrack->GetUserInformation());
-    else anInfo = new WCSimTrackInformation();
-
+    else 
+    {
+      anInfo = new WCSimTrackInformation();
+      anInfo->SetPrimaryParentID(aTrack->GetTrackID());
+      anInfo->SetPhotonStartTime(aTrack->GetGlobalTime());
+		  anInfo->SetPhotonStartPos(aTrack->GetPosition());
+		  anInfo->SetPhotonStartDir(aTrack->GetMomentumDirection());
+    }
+    
     anInfo->ResetPhotonHistory();
 
     G4Track* theTrack = (G4Track*)aTrack;

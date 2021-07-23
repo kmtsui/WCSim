@@ -120,6 +120,10 @@ private:
   Float_t fPhotonEndPos[3];
   Float_t fPhotonStartDir[3];
   Float_t fPhotonEndDir[3];
+  // Number of scattering/reflection a photon experiences
+  Int_t fReflection;
+  Int_t fRayScattering;
+  Int_t fMieScattering;
 
 public:
   WCSimRootCherenkovHitTime() {}
@@ -129,7 +133,8 @@ public:
 			    Float_t photonStartPos[3],
 			    Float_t photonEndPos[3],
 			    Float_t photonStartDir[3],
-			    Float_t photonEndDir[3]);
+			    Float_t photonEndDir[3],
+          std::vector<Int_t> photonHistory);
   virtual ~WCSimRootCherenkovHitTime() { }
 
   Double_t   GetTruetime() { return fTruetime;}
@@ -139,6 +144,9 @@ public:
   Float_t   GetPhotonEndPos(int i) { return (i<3) ? fPhotonEndPos[i] : 0; }
   Float_t   GetPhotonStartDir(int i) { return (i<3) ? fPhotonStartDir[i] : 0; }
   Float_t   GetPhotonEndDir(int i) { return (i<3) ? fPhotonEndDir[i] : 0; }
+  Int_t     GetReflection() { return fReflection; }
+  Int_t     GetRayScattering() { return fRayScattering; }
+  Int_t     GetMieScattering() { return fMieScattering; }
 
   ClassDef(WCSimRootCherenkovHitTime,1)  
 };
@@ -422,7 +430,8 @@ public:
 					  std::vector<TVector3>   photonStartPos,
 					  std::vector<TVector3>   photonEndPos,
 					  std::vector<TVector3>   photonStartDir,
-					  std::vector<TVector3>   photonEndDir);
+					  std::vector<TVector3>   photonEndDir,
+            std::vector<std::vector<Int_t>> photonHistory);
   TClonesArray        *GetCherenkovHits() const {return fCherenkovHits;}
   TClonesArray        *GetCherenkovHitTimes() const {return fCherenkovHitTimes;}
 

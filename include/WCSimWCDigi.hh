@@ -75,6 +75,7 @@ private:
   std::map<int, G4ThreeVector>    photonEndPos; ///< End point of the photon of the Hit (do not use for Digits)
   std::map<int, G4ThreeVector>    photonStartDir; ///< Start dir of the photon of the Hit (do not use for Digits)
   std::map<int, G4ThreeVector>    photonEndDir; ///< End dir of the photon of the Hit (do not use for Digits)
+  std::map<int, std::vector<int>> photonHistory; ///< Scattering/reflection history of the photon of the Hit (do not use for Digits)
   
 
   //integrated hit/digit parameters
@@ -101,6 +102,7 @@ public:
   inline void SetPhotonEndPos(G4int gate, const G4ThreeVector &position) { photonEndPos[gate] = position; };
   inline void SetPhotonStartDir(G4int gate, const G4ThreeVector &direction) { photonStartDir[gate] = direction; };
   inline void SetPhotonEndDir(G4int gate, const G4ThreeVector &direction) { photonEndDir[gate] = direction; };
+  inline void SetPhotonHistory(G4int gate, const std::vector<int> &phistory) { photonHistory[gate] = phistory; };
 
   // Add a digit number and unique photon number to fDigiComp
   inline void AddPhotonToDigiComposition(int digi_number, int photon_number){
@@ -120,6 +122,7 @@ public:
   inline G4ThreeVector  GetPhotonEndPos(int gate)    { return photonEndPos[gate];};
   inline G4ThreeVector  GetPhotonStartDir(int gate)    { return photonStartDir[gate];};
   inline G4ThreeVector  GetPhotonEndDir(int gate)    { return photonEndDir[gate];};
+  inline std::vector<G4int>  GetPhotonHistory(int gate)    { return photonHistory[gate];};
   inline G4int          GetTrackID()    { return trackID;};
   inline G4double GetGateTime(int gate) { return TriggerTimes[gate];}
   inline G4int   GetTubeID() {return tubeID;};
@@ -171,6 +174,7 @@ public:
     G4ThreeVector index_photonendpos;
     G4ThreeVector index_photonstartdir;
     G4ThreeVector index_photonenddir;
+    std::vector<int> index_photonhistory;
     for (i = 1; i < (int) time.size(); ++i)
       {
         index_time  = time[i];
@@ -183,6 +187,7 @@ public:
 	index_photonendpos = photonEndPos[i];
 	index_photonstartdir = photonStartDir[i];
 	index_photonenddir = photonEndDir[i];
+  index_photonhistory = photonHistory[i];
         for (j = i; j > 0 && time[j-1] > index_time; j--) {
           time[j] = time[j-1];
           pe[j] = pe[j-1];
@@ -193,6 +198,7 @@ public:
 	  photonEndPos[j] = photonEndPos[j-1];
 	  photonStartDir[j] = photonStartDir[j-1];
 	  photonEndDir[j] = photonEndDir[j-1];
+    photonHistory[j] = photonHistory[j-1];
           //G4cout <<"swapping "<<time[j-1]<<" "<<index_time<<G4endl;
         }
         
@@ -206,6 +212,7 @@ public:
 	photonEndPos[j] = index_photonendpos;
 	photonStartDir[j] = index_photonstartdir;
 	photonEndDir[j] = index_photonenddir;
+  photonHistory[j] = index_photonhistory;
       }    
   }
   

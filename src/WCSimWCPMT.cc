@@ -230,6 +230,7 @@ void WCSimWCPMT::MakePeCorrection(WCSimWCHitsCollection* WCHC)
 	    G4ThreeVector photon_endpos = (*WCHC)[i]->GetPhotonEndPos(ip);
 	    G4ThreeVector photon_startdir = (*WCHC)[i]->GetPhotonStartDir(ip);
 	    G4ThreeVector photon_enddir = (*WCHC)[i]->GetPhotonEndDir(ip);
+      std::vector<G4int> photon_history = (*WCHC)[i]->GetPhotonHistory(ip);
 	    
 	    if ( DigiHitMapPMT[tube] == 0) {
 	      WCSimWCDigi* Digi = new WCSimWCDigi();
@@ -249,6 +250,7 @@ void WCSimWCPMT::MakePeCorrection(WCSimWCHitsCollection* WCHC)
 	      Digi->SetPhotonEndPos(ip,photon_endpos);
 	      Digi->SetPhotonStartDir(ip,photon_startdir);
 	      Digi->SetPhotonEndDir(ip,photon_enddir);
+        Digi->SetPhotonHistory(ip,photon_history);
 	      DigiHitMapPMT[tube] = DigitsCollection->insert(Digi);
 	      bqDigiHitCounter++;
 	    }	
@@ -269,6 +271,7 @@ void WCSimWCPMT::MakePeCorrection(WCSimWCHitsCollection* WCHC)
 	      (*DigitsCollection)[DigiHitMapPMT[tube]-1]->SetPhotonEndPos(ip,photon_endpos);
 	      (*DigitsCollection)[DigiHitMapPMT[tube]-1]->SetPhotonStartDir(ip,photon_startdir);
 	      (*DigitsCollection)[DigiHitMapPMT[tube]-1]->SetPhotonEndDir(ip,photon_enddir);
+        (*DigitsCollection)[DigiHitMapPMT[tube]-1]->SetPhotonHistory(ip,photon_history);
 	    }
 	    
 	    maxTotalPe = (maxTotalPe < ip) ? ip : maxTotalPe;

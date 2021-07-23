@@ -42,28 +42,6 @@ void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
   G4StepPoint* thePostPoint = aStep->GetPostStepPoint();
   G4VPhysicalVolume* thePostPV = thePostPoint->GetPhysicalVolume();
 
-  // Record photon scattering history
-  if (track->GetDefinition()==G4OpticalPhoton::OpticalPhotonDefinition()) {
-    const G4VProcess* pds = thePostPoint->GetProcessDefinedStep();
-    WCSimTrackInformation* trackinfo = (WCSimTrackInformation*)(aStep->GetTrack()->GetUserInformation());
-
-    if (trackinfo) {
-      if (pds->GetProcessName() == "OpRayleigh") {
-        trackinfo->AddRaySct();
-      }
-      else if (pds->GetProcessName() == "OpMieHG") {
-        trackinfo->AddMieSct();
-      }
-      else if (pds->GetProcessName() == "OpBoundary") {
-        G4OpBoundaryProcess* boundary = (G4OpBoundaryProcess*)pds;
-        if((boundary->GetStatus() >= FresnelReflection && boundary->GetStatus() <=BackScattering) || 
-            (boundary->GetStatus() >= PolishedLumirrorAirReflection && boundary->GetStatus() <=GroundVM2000GlueReflection))
-            trackinfo->AddReflec();
-      }
-    }
-
-  }
-
   //G4OpBoundaryProcessStatus boundaryStatus=Undefined;
   //static G4ThreadLocal G4OpBoundaryProcess* boundary=NULL;  //doesn't work and needs #include tls.hh from Geant4.9.6 and beyond
   G4OpBoundaryProcess* boundary=NULL;
@@ -137,6 +115,27 @@ void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
 	}	*/
       
     }
+  }
+
+  // Record photon scattering history
+  if (particleType==G4OpticalPhoton::OpticalPhotonDefinition()) {
+    const G4VProcess* pds = thePostPoint->GetProcessDefinedStep();
+    WCSimTrackInformation* trackinfo = (WCSimTrackInformation*)(aStep->GetTrack()->GetUserInformation());
+
+    if (trackinfo) {
+      if (pds->GetProcessName() == "OpRayleigh") {
+        trackinfo->AddRaySct();
+      }
+      else if (pds->GetProcessName() == "OpMieHG") {
+        trackinfo->AddMieSct();
+      }
+      else {
+        if((boundary->GetStatus() >= FresnelReflection && boundary->GetStatus() <=BackScattering) || 
+           (boundary->GetStatus() >= PolishedLumirrorAirReflection && boundary->GetStatus() <=GroundVM2000GlueReflection))
+              trackinfo->AddReflec();
+      }
+    }
+
   }
 
 

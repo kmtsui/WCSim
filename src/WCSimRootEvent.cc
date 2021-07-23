@@ -422,7 +422,8 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID,
 							 std::vector<TVector3> photonStartPos,
 							 std::vector<TVector3> photonEndPos,
 							 std::vector<TVector3> photonStartDir,
-							 std::vector<TVector3> photonEndDir)
+							 std::vector<TVector3> photonEndDir,
+               std::vector<std::vector<Int_t>> photonHistory)
 
 {
   // Add a new Cherenkov hit to the list of Cherenkov hits
@@ -441,10 +442,11 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID,
       startDir[j] = photonStartDir[i][j];
       endDir[j] = photonEndDir[i][j];
     }
+    std::vector<Int_t> phistory = photonHistory[i];
     WCSimRootCherenkovHitTime *cherenkovhittime = 
       new(cherenkovhittimes[fNcherenkovhittimes++]) WCSimRootCherenkovHitTime(truetime[i],primParID[i],
                                                                               photonStartTime[i], startPos, endPos,
-                                                                              startDir, endDir);
+                                                                              startDir, endDir, phistory);
   }
   
 #ifdef DEBUG
@@ -499,7 +501,8 @@ WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Double_t truetime,
 						     Float_t photonStartPos[3],
 						     Float_t photonEndPos[3],
 						     Float_t photonStartDir[3],
-						     Float_t photonEndDir[3])
+						     Float_t photonEndDir[3],
+                 std::vector<Int_t> photonHistory)
 {
   // Create a WCSimRootCherenkovHit object and fill it with stuff
     fTruetime        = truetime; 
@@ -511,6 +514,9 @@ WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Double_t truetime,
         fPhotonStartDir[i] = photonStartDir[i];
         fPhotonEndDir[i] = photonEndDir[i];
     }
+    fReflection = photonHistory[0];
+    fRayScattering = photonHistory[1];
+    fMieScattering = photonHistory[2];
 }
 
 //_____________________________________________________________________________
