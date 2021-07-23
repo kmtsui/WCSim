@@ -54,6 +54,8 @@ public:
   G4ThreeVector GetPhotonStartPos() {return photonStartPos;}
   G4ThreeVector GetPhotonStartDir() {return photonStartDir;}
 
+  void ResetPhotonHistory() { nReflection=0; nRayScattering=0; nMieScattering=0; }
+
   inline void *operator new(size_t);
   inline void operator delete(void *aTrackInfo);
   inline int operator ==(const WCSimTrackInformation& right) const

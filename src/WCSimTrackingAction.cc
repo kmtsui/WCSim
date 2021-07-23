@@ -84,6 +84,21 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
   	// First track of the decay save time
   	fTime_birth = aTrack->GetGlobalTime(); 
   }
+
+  // Attach WCSimTrackInformation to photon track to record scattering history
+  if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
+  {
+    WCSimTrackInformation* anInfo;
+    if (aTrack->GetUserInformation())
+      anInfo = (WCSimTrackInformation*)(aTrack->GetUserInformation());
+    else anInfo = new WCSimTrackInformation();
+
+    anInfo->ResetPhotonHistory();
+
+    G4Track* theTrack = (G4Track*)aTrack;
+    theTrack->SetUserInformation(anInfo);
+  }
+  
 }
 
 void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
