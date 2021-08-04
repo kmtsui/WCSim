@@ -101,6 +101,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     photonStartTime = aStep->GetTrack()->GetGlobalTime();
     photonStartPos = aStep->GetTrack()->GetVertexPosition();
     photonStartDir = aStep->GetTrack()->GetVertexMomentumDirection();
+    // trackinfo should already be initialized in WCSimTracking action for optical photon, so just an extra protection here
     photonHistory.push_back(0); photonHistory.push_back(0); photonHistory.push_back(0);
   }
 

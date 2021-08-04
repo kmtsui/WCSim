@@ -123,13 +123,13 @@ void WCSimSteppingAction::UserSteppingAction(const G4Step* aStep)
     WCSimTrackInformation* trackinfo = (WCSimTrackInformation*)(aStep->GetTrack()->GetUserInformation());
 
     if (trackinfo) {
-      if (pds->GetProcessName() == "OpRayleigh") {
+      if (pds->GetProcessName() == "OpRayleigh") {     // Rayleigh scattering occurs
         trackinfo->AddRaySct();
       }
-      else if (pds->GetProcessName() == "OpMieHG") {
+      else if (pds->GetProcessName() == "OpMieHG") {   // Mie scattering occurs
         trackinfo->AddMieSct();
       }
-      else {
+      else { // accepts boundary processes related to reflection, may include some unnecessary processes
         if((boundary->GetStatus() >= FresnelReflection && boundary->GetStatus() <=BackScattering) || 
            (boundary->GetStatus() >= PolishedLumirrorAirReflection && boundary->GetStatus() <=GroundVM2000GlueReflection))
               trackinfo->AddReflec();

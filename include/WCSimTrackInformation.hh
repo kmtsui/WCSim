@@ -22,6 +22,7 @@ private:
   G4ThreeVector  photonStartDir;
 
   // Tracking photon reflection and scattering history
+  // These integers record the number of reflection/scattering before a photon reaches the sensitive detector
   G4int nReflection;
   G4int nRayScattering;
   G4int nMieScattering;

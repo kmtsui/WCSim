@@ -86,6 +86,7 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
   }
 
   // Attach WCSimTrackInformation to photon track to record scattering history
+  // Necessary for events with primary photons, e.g. light injector simulation
   if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
   {
     WCSimTrackInformation* anInfo;
