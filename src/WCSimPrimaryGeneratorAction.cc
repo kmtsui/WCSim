@@ -92,6 +92,7 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   nPhotons = 1;
   injectorOnIdx = 0;
   twindow = 0.;
+  timeShape = 0;
   openangle = 0.;
   wavelength = 435.;
 }
@@ -550,7 +551,28 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         }
       }
 
-      MyGPS->GeneratePrimaryVertex(anEvent);
+      if (timeShape==0) // all photons emitted at the same time
+      {
+        MyGPS->GeneratePrimaryVertex(anEvent);
+      }
+      else if (timeShape==1) // uniform emission in time
+      {
+        MyGPS->GetCurrentSource()->SetNumberOfParticles(1);
+        for (int i=0;i<nPhotonsPerInjectors;i++)
+        {
+          MyGPS->SetParticleTime((G4UniformRand() - 0.5)*twindow);
+          MyGPS->GeneratePrimaryVertex(anEvent);
+        }
+      }
+      else if (timeShape==2) // Gaussian distribution
+      {
+        MyGPS->GetCurrentSource()->SetNumberOfParticles(1);
+        for (int i=0;i<nPhotonsPerInjectors;i++)
+        {
+          MyGPS->SetParticleTime(G4RandGauss::shoot(0.0,twindow));
+          MyGPS->GeneratePrimaryVertex(anEvent);
+        }
+      }
       
       G4ThreeVector P   =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();
       G4ThreeVector vtx =anEvent->GetPrimaryVertex()->GetPosition();

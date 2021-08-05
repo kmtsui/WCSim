@@ -104,7 +104,8 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         // For injector events
         G4int nPhotons;
         G4int injectorOnIdx;
-        G4double twindow;
+        G4int timeShape; // 0 = point, 1 = uniform, 2 = Gaussian
+        G4double twindow; // temporal distribution width
         G4double openangle;
         G4double wavelength;
 
@@ -167,6 +168,7 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         inline void SetInjectorBeamPhotons(G4int np) { nPhotons = np;}
         inline void SetInjectorOnIdx(G4int idx) { injectorOnIdx = idx;}
         inline void SetInjectorTimeWindow(G4double tw) { twindow = tw;}
+        inline void SetInjectorTimeShape(G4int ts) { timeShape = ts;}
         inline void SetInjectorOpeningAngle(G4double angle) { openangle = angle;}
         inline void SetInjectorWavelength(G4double wl) { wavelength = wl;}
 

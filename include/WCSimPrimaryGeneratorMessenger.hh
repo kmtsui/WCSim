@@ -44,6 +44,7 @@ class WCSimPrimaryGeneratorMessenger: public G4UImessenger
   G4UIcmdWithAnInteger* nPhotonsCmd;
   G4UIcmdWithAnInteger* injectorOnCmd;
   G4UIcmdWithADouble* injectorTimeCmd;
+  G4UIcmdWithAString* injectorShapeCmd;
   G4UIcmdWithADouble* openingAngleCmd;
   G4UIcmdWithADouble* injectorWavelengthCmd;
   

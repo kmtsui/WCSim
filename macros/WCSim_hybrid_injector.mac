@@ -129,6 +129,13 @@
 /mygen/injector_opening_angle 4
 # laser wavelength in nm
 /mygen/injector_wavelength 435
+# Temporal shape of laser: point, uniform, gaus
+/mygen/injector_time_shape point
+# Temporal width of laser in ns
+# point: irrelevant
+# uniform: uniformly distributed within [-width/2, width/2]
+# gaus: (mean, sigma) = (0, width)
+/mygen/injector_time_width 0
 
 ##### NEW
 /Tracking/fractionOpticalPhotonsToDraw 0.0

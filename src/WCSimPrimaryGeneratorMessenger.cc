@@ -55,11 +55,16 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   injectorOnCmd->SetParameterName("injector_on_index",true);
   injectorOnCmd->SetDefaultValue(0.);
 
-  // not really implemented yet, just a placeholder
   injectorTimeCmd = new G4UIcmdWithADouble("/mygen/injector_time_width",this);
   injectorTimeCmd->SetGuidance("Injector time width");
   injectorTimeCmd->SetParameterName("injector_time_width",true);
   injectorTimeCmd->SetDefaultValue(0.);
+
+  injectorShapeCmd = new G4UIcmdWithAString("/mygen/injector_time_shape",this);
+  injectorShapeCmd->SetGuidance("Injector temporal shape: point, uniform, gaus");
+  injectorShapeCmd->SetParameterName("injector_time_shape",true);
+  injectorShapeCmd->SetDefaultValue("point");
+  injectorShapeCmd->SetCandidates("point uniform gaus");
 
   openingAngleCmd = new G4UIcmdWithADouble("/mygen/injector_opening_angle",this);
   openingAngleCmd->SetGuidance("Opening angle of light injector in deg");
@@ -102,6 +107,7 @@ WCSimPrimaryGeneratorMessenger::~WCSimPrimaryGeneratorMessenger()
   delete nPhotonsCmd;
   delete injectorOnCmd;
   delete injectorTimeCmd;
+  delete injectorShapeCmd;
   delete openingAngleCmd;
   delete injectorWavelengthCmd;
 }
@@ -236,6 +242,16 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
   if ( command==injectorTimeCmd ) 
     {
       myAction->SetInjectorTimeWindow(injectorTimeCmd->GetNewDoubleValue(newValue));
+    }
+
+  if ( command==injectorShapeCmd ) 
+    {
+      if (newValue == "point")
+        myAction->SetInjectorTimeShape(0);
+      else if (newValue == "uniform")
+        myAction->SetInjectorTimeShape(1);
+      else if (newValue == "gaus")
+        myAction->SetInjectorTimeShape(2);
     }
 
   if ( command==openingAngleCmd ) 
