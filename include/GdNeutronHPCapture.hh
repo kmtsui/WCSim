@@ -19,6 +19,8 @@
 #include "globals.hh"
 #include "G4NeutronHPChannel.hh"
 #include "G4HadronicInteraction.hh"
+#include "G4NeutronHPManager.hh"
+#include "G4NeutronHPCaptureFS.hh"
 
 class GdNeutronHPCapture : public G4HadronicInteraction
 {

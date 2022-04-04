@@ -43,7 +43,7 @@
 
 // prepare target
     G4double eps = 0.0001;
-    if(targetMass<500*MeV)
+    if(targetMass<500*CLHEP::MeV)
       targetMass = ( G4NucleiProperties::GetNuclearMass( static_cast<G4int>(theBaseA+eps) , static_cast<G4int>(theBaseZ+eps) )) /
                      G4Neutron::Neutron()->GetPDGMass();
     G4ThreeVector neutronVelocity = 1./G4Neutron::Neutron()->GetPDGMass()*theNeutron.GetMomentum();

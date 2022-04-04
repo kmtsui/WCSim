@@ -26,7 +26,7 @@
   ,numEle(0)
   {
     SetMinEnergy( 0.0 );
-    SetMaxEnergy( 20.*MeV );
+    SetMaxEnergy( 20.*CLHEP::MeV );
     /*
     G4cout << "Capture : start of construction!!!!!!!!"<<G4endl;
     if(!getenv("G4NEUTRONHPDATA")) 
