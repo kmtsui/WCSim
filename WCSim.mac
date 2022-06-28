@@ -4,7 +4,7 @@
 /tracking/verbose 0
 /hits/verbose 0
 #/control/execute vis.mac
-/vis/open OGLSQt
+#/vis/open OGLSQt
 
 ## select the geometry
 # Default config if you do nothing is currently SuperK
@@ -72,7 +72,7 @@
 
 # setseed - option to change seeds
 #/random/setSeeds 2 1
-/WCSim/random/seed 4
+#/WCSim/random/seed 4
 
 
 # default dark noise frequency (and conversion factor) is PMT property (NEW), set in the code.
@@ -103,7 +103,7 @@
 #Uncomment one of the lines below if you want to use the OGLSX or RayTracer visualizer
 #/control/execute macros/visOGLSX.mac
 #/control/execute macros/visRayTracer.mac
-/control/execute macros/visOGLQT.mac             ## NEW
+#/control/execute macros/visOGLQT.mac             ## NEW
 
 ## select the input nuance-formatted vector file
 ## you can of course use your own
