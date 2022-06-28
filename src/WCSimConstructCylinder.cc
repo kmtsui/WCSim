@@ -180,7 +180,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
   //                 L.Anthony 23/06/2022 
   //---------------------------------------------------------
   /*
-  auto shape_bunny = CADMesh::TessellatedMesh::FromSTL("/home/lauren/work/IWCD/software/WCSim/stl_files/bunny.stl");
+  auto shape_bunny = CADMesh::TessellatedMesh::FromSTL("/path/to/WCSim//bunny.stl");
   
   // set scale
   shape_bunny->SetScale(1);
