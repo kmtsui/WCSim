@@ -3,8 +3,6 @@
 /run/verbose 1
 /tracking/verbose 0
 /hits/verbose 0
-#/control/execute vis.mac
-#/vis/open OGLSQt
 
 ## select the geometry
 # Default config if you do nothing is currently SuperK
@@ -28,11 +26,8 @@
 
 #Use mPMTs settings (uncomment/delete the above)
 #/WCSim/WCgeom nuPRISM_mPMT
-#/WCSim/WCgeom nuPRISMBeamTest_mPMT ## this is 18c5r from the original design
-#/WCSim/WCgeom nuPRISMBeamTest_18c_mPMT ## this is 18c5r from CAD
-#/WCSim/WCgeom nuPRISMBeamTest_16c_mPMT ## this is 16c5r from CAD
-/WCSim/WCgeom nuPRISMBeamTest_16cShort_mPMT ## this is 16c4r from CAD
-#/WCSim/WCgeom nuPRISMShort_mPMT
+#/WCSim/WCgeom nuPRISMBeamTest_mPMT
+/WCSim/WCgeom nuPRISMShort_mPMT
 # Set Gadolinium doping (concentration is in percent)
 #/WCSim/DopingConcentration 0.1
 #/WCSim/DopedWater false
@@ -69,10 +64,6 @@
 
 #grab the other DAQ options (thresholds, timing windows, etc.)
 /control/execute macros/daq.mac
-
-# setseed - option to change seeds
-#/random/setSeeds 2 1
-#/WCSim/random/seed 4
 
 
 # default dark noise frequency (and conversion factor) is PMT property (NEW), set in the code.
@@ -115,22 +106,22 @@
 # Or you can use the G4 Particle Gun
 # for a full list of /gun/ commands see:
 # http://geant4.web.cern.ch/geant4/G4UsersDocuments/UsersGuides/ForApplicationDeveloper/html/Control/UIcommands/_gun_.html
-#/mygen/generator gun
-#/gun/particle e-
+/mygen/generator gun
+/gun/particle e-
 #/gun/particle pi0
-#/gun/energy 500 MeV
-#/gun/direction 0 1 0
-#/gun/position 0 0 0  
+/gun/energy 500 MeV
+/gun/direction 1 0 0
+/gun/position 0 0 0  
 
 # Or you can use the G4 General Particle Source
 # you can do a lot more with this than a monoenergetic, monodirectional, single-particle gun
 # for a full list of /gps/ commands see:
 # https://geant4.web.cern.ch/geant4/UserDocumentation/UsersGuides/ForApplicationDeveloper/html/ch02s07.html
-/mygen/generator gps
-/gps/particle e-
-/gps/energy 500 MeV
-/gps/direction -1 0 0
-/gps/position 165 0 0
+#/mygen/generator gps
+#/gps/particle e-
+#/gps/energy 500 MeV
+#/gps/direction 1 0 0
+#/gps/position 0 0 0
 
 # Or you can use the laser option
 # This is equivalent to the gps command, except that the gps particle energies are saved ignoring their mass
@@ -139,13 +130,13 @@
 # It is used for laser calibration simulation
 #/mygen/generator laser
 #/gps/particle opticalphoton
-#/gps/energy 3.505 eV
-#/gps/direction 0 0 1
+#/gps/energy 2.505 eV
+#/gps/direction 1 0 0
 #/gps/position 0 0 0
-#/gps/number 10000
+#/gps/number 1000
 #/gps/ang/type iso
 #/gps/ang/mintheta 0 deg
-#/gps/ang/maxtheta 10 deg
+#/gps/ang/maxtheta 30 deg
 #/gps/ang/minphi 0 deg
 #/gps/ang/maxphi 360 deg
 
@@ -153,7 +144,7 @@
 /Tracking/fractionOpticalPhotonsToDraw 0.0
 
 ## change the name of the output root file, default = wcsim.root
-/WCSimIO/RootFile wcsim.root
+/WCSimIO/RootFile wcsim_output.root
 
 ## Boolean to select whether to save the NEUT RooTracker vertices in the output file, provided you used
 ## a NEUT vector file as input
@@ -162,5 +153,5 @@
 ## set a timer running on WCSimRunAction
 #/WCSimIO/Timer false
 
-/run/beamOn 1
+/run/beamOn 10
 #exit
