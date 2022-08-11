@@ -92,8 +92,6 @@ public:
   void SetNuPrismGeometry(G4String PMTType, G4double PMTCoverage, G4double detectorHeight, G4double detectorDiameter, G4double verticalPosition);
   void SetNuPrism_mPMTGeometry();
   void SetNuPrismBeamTest_mPMTGeometry();
-  void SetNuPrismBeamTest_18c_mPMTGeometry(); // Jul 02 2021 L.Anthony
-  void SetNuPrismBeamTest_16c_mPMTGeometry(); // Jul 02 2021 L.Anthony
   void SetNuPrismBeamTest_16cShort_mPMTGeometry(); // Jul 02 2021 L.Anthony
   void SetNuPrismShort_mPMTGeometry();
   void SetDefaultNuPrismGeometry();
@@ -271,14 +269,8 @@ public:
   void   SetIsNuPrismBeamTest(G4bool choice) {isNuPrismBeamTest = choice;}
   G4bool GetIsNuPrismBeamTest() {return isNuPrismBeamTest;}
 
-  //Set if nuPRISM for WCTE (NuPRISMBeamTest_18c, 16c and 16cShort)
+  //Set if nuPRISM for WCTE (NuPRISMBeamTest 16cShort)
   // L.Anthony added Jul 02 2021
-  void   SetIsNuPrismBeamTest_18c(G4bool choice) {isNuPrismBeamTest_18c = choice;}
-  G4bool GetIsNuPrismBeamTest_18c() {return isNuPrismBeamTest_18c;}
-
-  void   SetIsNuPrismBeamTest_16c(G4bool choice) {isNuPrismBeamTest_16c = choice;}
-  G4bool GetIsNuPrismBeamTest_16c() {return isNuPrismBeamTest_16c;}
-
   void   SetIsNuPrismBeamTest_16cShort(G4bool choice) {isNuPrismBeamTest_16cShort = choice;}
   G4bool GetIsNuPrismBeamTest_16cShort() {return isNuPrismBeamTest_16cShort;}
   
@@ -539,8 +531,6 @@ private:
   // Add bool to indicate whether we load nuPRISM geometry  
   G4bool isNuPrism;
   G4bool isNuPrismBeamTest;
-  G4bool isNuPrismBeamTest_18c; // Jul 02 2021 L.Anthony
-  G4bool isNuPrismBeamTest_16c; // Jul 02 2021 L.Anthony
   G4bool isNuPrismBeamTest_16cShort; // Jul 02 2021 L.Anthony
   G4String WCPMTType;
   // G4double WCPMTCoverage; //TF: already using this variable "WCPMTPercentCoverage
