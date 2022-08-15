@@ -29,8 +29,6 @@
 #Use mPMTs settings (uncomment/delete the above)
 #/WCSim/WCgeom nuPRISM_mPMT
 #/WCSim/WCgeom nuPRISMBeamTest_mPMT ## this is 18c5r from the original design
-#/WCSim/WCgeom nuPRISMBeamTest_18c_mPMT ## this is 18c5r from CAD
-#/WCSim/WCgeom nuPRISMBeamTest_16c_mPMT ## this is 16c5r from CAD
 /WCSim/WCgeom nuPRISMBeamTest_16cShort_mPMT ## this is 16c4r from CAD
 #/WCSim/WCgeom nuPRISMShort_mPMT
 # Set Gadolinium doping (concentration is in percent)
