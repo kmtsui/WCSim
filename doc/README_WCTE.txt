@@ -4,17 +4,13 @@
 ###############################################################
 
 You can control the version of geometry in nuPRISMBeamTest.mac. 
-There are 3 new versions of WCTE geometry that can be controlled here:
 
-nuPRISMBeamTest_18c_mPMT
-18c = 18 columns 5 rows. Same as the original design but with dimensions from CAD.
-
-nuPRISMBeamTest_16c_mPMT
-16c = 16 columns 5 rows with dimensions taken from CAD
-
-
-nuPRISMBeamTest_16cShort_mPMT
+nuPRISMBeamTest_16cShort_mPMT is the most up to date version of the detector
 16cShort = 16 columns 4 rows with dimensions from CAD
+
+nuPRISMBeamTest_mPMT is the original WCTE geometry which fiTQun was first tuned for
 
 The code which defines the geometries is src/WCSimDetectorConfigs.C
 Here the size and number of columns and rows are set.
+
+WCSimConstructCylinder.cc also has ability to import CAD models using CADMesh
