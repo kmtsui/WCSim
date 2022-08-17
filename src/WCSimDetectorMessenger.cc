@@ -438,14 +438,6 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		WCSimDetector->SetIsNuPrismBeamTest(true); // Jun.04,2020 M.Shinoki
 		WCSimDetector->SetIsNuPrism(true);
 		WCSimDetector->SetNuPrismBeamTest_mPMTGeometry();
-		} else if ( newValue == "nuPRISMBeamTest_18c_mPMT") {
-		WCSimDetector->SetIsNuPrismBeamTest_18c(true); // Jul.01,2021 L.Anthony
-		WCSimDetector->SetIsNuPrism(true);
-                WCSimDetector->SetNuPrismBeamTest_18c_mPMTGeometry();
-		} else if ( newValue == "nuPRISMBeamTest_16c_mPMT") {
-                WCSimDetector->SetIsNuPrismBeamTest_16c(true); // Jul.01,2021 L.Anthony
-                WCSimDetector->SetIsNuPrism(true);
-                WCSimDetector->SetNuPrismBeamTest_16c_mPMTGeometry();
 		} else if ( newValue == "nuPRISMBeamTest_16cShort_mPMT") {
 		WCSimDetector->SetIsNuPrismBeamTest_16cShort(true); // Jul.01,2021 L.Anthony
                 WCSimDetector->SetIsNuPrism(true);
