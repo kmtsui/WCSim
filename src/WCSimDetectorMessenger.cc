@@ -42,6 +42,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			  "Cylinder_60x74_3inch_14perCent\n"
 			  "Cylinder_60x74_3inch_40perCent\n"
 			  "TestSinglemPMT\n"
+			  "SinglemPMTWorld\n"
                          );
   PMTConfig->SetParameterName("PMTConfig", false);
   PMTConfig->SetCandidates("SuperK "
@@ -70,6 +71,7 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
 			   "Cylinder_60x74_3inchmPMT_40perCent "
 			   "Cylinder_60x74_3inch_14perCent "
 			   "Cylinder_60x74_3inch_40perCent "
+			   "SinglemPMTWorld "
 			   "TestSinglemPMT\n"
                            );
   PMTConfig->AvailableForStates(G4State_PreInit, G4State_Idle);
@@ -456,6 +458,8 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 			WCSimDetector->SetHyperK_HybridmPMTGeometry();
 		} else if ( newValue == "HyperK_HybridmPMT10PC") {
 			WCSimDetector->SetHyperK_HybridmPMT10PCGeometry();
+		} else if ( newValue == "SinglemPMTWorld") {
+			WCSimDetector->SetHyperK_SinglemPMTWorld();
 		} else if ( newValue == "HyperK_HybridFake") {
 			WCSimDetector->SetHyperK_HybridFakeGeometry();
 		} else if ( newValue == "EggShapedHyperK") {

@@ -100,6 +100,7 @@ public:
   void SetNuPrism_mPMTGeometry();
   void SetNuPrismBeamTest_mPMTGeometry();
   void SetNuPrismShort_mPMTGeometry();
+  void SetHyperK_SinglemPMTWorld();
   void SetDefaultNuPrismGeometry();
   void UpdateGeometry();
 
@@ -193,6 +194,9 @@ public:
 
   void   SetIsEggShapedHyperK(G4bool choice) {isEggShapedHyperK = choice;}
   G4bool GetIsEggShapedHyperK() {return isEggShapedHyperK;}
+
+  void   SetIsSinglemPMT(G4bool choice) {isSinglemPMT = choice;}
+  G4bool GetIsSinglemPMT() {return isSinglemPMT;}
 
   void SetEggShapedHyperKGeometry();
   void SetEggShapedHyperKGeometry_withHPD();
@@ -410,6 +414,7 @@ private:
 
   // The Construction routines
   G4LogicalVolume*   ConstructCylinder();
+  G4LogicalVolume*   ConstructSinglemPMTWorld();
 
   G4LogicalVolume* ConstructPMT(G4String,G4String,G4String detectorElement="tank",G4int nIDPMTs=1);//Modified by B.Quilain 2018/12 to implement hybrid detector
   G4LogicalVolume* ConstructMultiPMT(G4String,G4String, G4String detectorElement="tank",G4int nIDPMTs=1); 
@@ -598,6 +603,7 @@ private:
                                          G4double, G4double);
 
     G4bool isEggShapedHyperK;
+    G4bool isSinglemPMT;
 
     G4double waterTank_TopR;
     G4double waterTank_BotR;
