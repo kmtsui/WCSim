@@ -10,27 +10,11 @@
 # Default config if you do nothing is currently SuperK
 # Nominal geometry for WCTE is nuPRISMBeamTest_16cShort_mPMT which is uncommented
 
-#/WCSim/WCgeom nuPRISM
 
-#Select which PMT to use
-#/WCSim/nuPRISM/SetPMTType PMT8inch
-#/WCSim/nuPRISM/SetPMTPercentCoverage 40
-#Set height of nuPRISM inner detector
-#/WCSim/nuPRISM/SetDetectorHeight 6. m
-#Set vertical position of inner detector, in beam coordinates
-#/WCSim/nuPRISM/SetDetectorVerticalPosition 0. m
-#Set diameter of inner detector
-#/WCSim/nuPRISM/SetDetectorDiameter 8. m
-# Set Gadolinium doping (concentration is in percent)
-#/WCSim/DopingConcentration 0.1
-#/WCSim/DopedWater false
-#/WCSim/Construct
-
-#Use mPMTs settings (uncomment/delete the above)
-#/WCSim/WCgeom nuPRISM_mPMT
+#Use mPMTs settings and beam test geometry 
 #/WCSim/WCgeom nuPRISMBeamTest_mPMT ## this is 18c5r from the original design
 /WCSim/WCgeom nuPRISMBeamTest_16cShort_mPMT ## this is 16c4r from CAD
-#/WCSim/WCgeom nuPRISMShort_mPMT
+
 # Set Gadolinium doping (concentration is in percent)
 #/WCSim/DopingConcentration 0.1
 #/WCSim/DopedWater false
@@ -77,15 +61,7 @@
 # Below gives possibility to overwrite nominal values, eg. to switch OFF the Dark Noise.
 #/DarkRate/SetDarkRate 0 kHz   #Turn dark noise off
 #/DarkRate/SetDarkRate 4.2 kHz #This is the value for SKI set in SKDETSIM.
-#/DarkRate/SetDarkRate 8.4 kHz #For 20 inch HPDs and Box and Line PMTs, based on High QE 20in R3600 dark rate from EGADS nov 2014
-#/DarkRate/SetDarkRate 3.0 kHz #For 12 inch HPDs and Box and Line PMTs, based on High QE 20in R3600 dark rate from EGADS nov 2014
 
-# command to multiply the dark rate.
-# Convert dark noise frequency before digitization to after digitization by setting suitable factor
-# Again, this is now a PMT property and can be overridden here
-#/DarkRate/SetConvert 1.367  #For Normal PMT
-#/DarkRate/SetConvert 1.119 #For HPDs
-#/DarkRate/SetConvert 1.126 #For Box and Line PMTs
 
 # Select which time window(s) to add dark noise to
 #/DarkRate/SetDarkMode 0 to add dark noise to a time window starting at
