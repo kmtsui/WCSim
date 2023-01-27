@@ -34,6 +34,11 @@
 #include "G4SystemOfUnits.hh"
 #include "G4PhysicalConstants.hh"
 
+#include "G4VSolid.hh" // following 4 .hh required for CADMesh.
+#include "G4Trd.hh"
+#include "G4NistManager.hh"
+#include "CADMesh.hh"
+
 
 /***********************************************************
  *
@@ -170,6 +175,42 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
    {//{if(!debugMode)
     //logicWCBarrel->SetVisAttributes(G4VisAttributes::Invisible);} 
    }
+	
+  //----------------- example CADMesh -----------------------
+  //                 L.Anthony 23/06/2022 
+  //---------------------------------------------------------
+  /*
+  auto shape_bunny = CADMesh::TessellatedMesh::FromSTL("/path/to/WCSim//bunny.stl");
+  
+  // set scale
+  shape_bunny->SetScale(1);
+  G4ThreeVector posBunny = G4ThreeVector(0*m, 0*m, 0*m);
+  
+  // make new shape a solid
+  G4VSolid* solid_bunny = shape_bunny->GetSolid();
+  
+  G4LogicalVolume* bunny_logical =                                   //logic name
+	new G4LogicalVolume(solid_bunny,                                 //solid name
+						G4Material::GetMaterial("StainlessSteel"),          //material
+						"bunny");                                     //objects name
+  // rotate if necessary
+  G4RotationMatrix* bunny_rot = new G4RotationMatrix; // Rotates X and Z axes only
+  bunny_rot->rotateX(270*deg);                 
+  bunny_rot->rotateY(45*deg);
+  
+  G4VPhysicalVolume* physiBunny =
+	new G4PVPlacement(bunny_rot,                       //no rotation
+					  posBunny,                    //at position
+					  bunny_logical,           //its logical volume
+					  "bunny",                //its name
+					  logicWCBarrel,                //its mother  volume
+					  false,                   //no boolean operation
+					  0);                       //copy number
+  //                      checkOverlaps);          //overlaps checking
+  
+  new G4LogicalSkinSurface("BunnySurface",bunny_logical,ReflectorSkinSurface);
+  */
+	
   //-----------------------------------------------------
   // Form annular section of barrel to hold PMTs 
   //----------------------------------------------------
@@ -1324,7 +1365,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
       xoffset = i*WCCapPMTSpacing + WCCapPMTSpacing*0.5;
       yoffset = j*WCCapPMTSpacing + WCCapPMTSpacing*0.5;
       // For WCTE (NuPRISMBeamTest_mPMT Geometry)
-      if (isNuPrismBeamTest){
+      if (isNuPrismBeamTest || isNuPrismBeamTest_16cShort){
       	xoffset = i*WCCapPMTSpacing;
       	yoffset = j*WCCapPMTSpacing;
       }
