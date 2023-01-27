@@ -147,7 +147,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructSinglemPMTWorld()
   
   G4LogicalVolume* logicWC = 
     new G4LogicalVolume(solidWC,
-			G4Material::GetMaterial("Air"),
+			//G4Material::GetMaterial("Air"),
+      G4Material::GetMaterial(water),
 			"WC",
 			0,0,0);
  
