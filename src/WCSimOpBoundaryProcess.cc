@@ -142,6 +142,10 @@ WCSimOpBoundaryProcess::WCSimOpBoundaryProcess(const G4String& processName,
         Rindex1 = Rindex2 = 1.;
         cost1 = cost2 = sint1 = sint2 = 0.;
 
+        fCoatedRindex = 1;
+        fCoatedRindexIm = 0;
+        fCoatedThickness = 0;
+
         idx = idy = 0;
         DichroicVector = NULL;
 
@@ -519,10 +523,11 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
                 }
              }
           }
+          //G4cout<< thePrePV->GetName() << " " <<thePostPV->GetName(); BoundaryProcessVerbose();
         }
         else if (type == x_ray + 1) // brute-force index to get coated surface
         {
-            CoatedDielectricDielectric();
+            CoatedDielectricDielectric_alt();
         }
         else {
 
@@ -1607,6 +1612,10 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
 
         NewPolarization = C_parl * A_paral + C_perp * A_trans;
 
+      // ad-hoc handle of total internal reflection
+      if (sint2*sint2>1.)
+         NewPolarization = -OldPolarization + (2.*OldPolarization * theFacetNormal)*theFacetNormal;
+
       }
       else
       {               // incident ray perpendicular
@@ -1768,4 +1777,269 @@ G4double WCSimOpBoundaryProcess::GetReflectivityThroughThinLayer(G4double sinTL,
   Reflectivity = Reflectivity_TE + Reflectivity_TM;
 
   return real(Reflectivity);
+}
+
+void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
+{
+  // Model taken from https://arxiv.org/abs/physics/0408075v1
+  // Some bugs are found in the paper and corrected in this implementation
+
+  G4MaterialPropertyVector* pp = nullptr;
+
+  G4MaterialPropertiesTable* MPT = Material2->GetMaterialPropertiesTable();
+  if((pp = MPT->GetProperty(kRINDEX)))
+  {
+    Rindex2 = pp->Value(thePhotonMomentum);
+  }
+
+  MPT = OpticalSurface->GetMaterialPropertiesTable();
+  if((pp = MPT->GetProperty("COATEDRINDEX")))
+  {
+    fCoatedRindex = pp->Value(thePhotonMomentum);
+  }
+  if((pp = MPT->GetProperty("COATEDRINDEXIM")))
+  {
+    fCoatedRindexIm = pp->Value(thePhotonMomentum);
+  }
+  if(MPT->ConstPropertyExists("COATEDTHICKNESS"))
+  {
+    fCoatedThickness = MPT->GetConstProperty("COATEDTHICKNESS");
+  }
+  if(MPT->ConstPropertyExists("COATEDFRUSTRATEDTRANSMISSION")) // this is not used 
+  {
+    fCoatedFrustratedTransmission =
+      (G4bool)MPT->GetConstProperty("COATEDFRUSTRATEDTRANSMISSION");
+  }
+
+  G4double sintTL;
+  G4double wavelength = h_Planck * c_light / thePhotonMomentum;
+  G4double PdotN;
+  G4double E1_perp, E1_parl;
+  G4double E2_perp, E2_parl, E2_total;
+  G4double E2_abs, C_parl, C_perp;
+  G4double alpha;
+  G4ThreeVector A_trans, A_paral, E1pp, E1pl;
+  //G4bool Inside  = false;
+  //G4bool Swap    = false;
+  G4bool through = false;
+  G4bool done    = false;
+
+  G4complex i(0, 1);
+  G4complex r23p, r34p, t23p, t32p, t34p;
+  G4complex r23s, r34s, t23s, t32s, t34s;
+  G4complex rp, tp, rs, ts;
+  G4complex delta, costh2, costh3, costh4, sinth3, sinth4, n2, n3, n4;
+  n2 = Rindex1;
+  n3 = fCoatedRindex+i*fCoatedRindexIm;
+  n4 = Rindex2;
+  G4double Rp, Tp, Rs, Ts, Rtot, Ttot;
+
+  do {
+    if (through)
+    {
+      //Swap = !Swap;
+      through = false;
+      theGlobalNormal = -theGlobalNormal;
+      G4SwapPtr(Material1, Material2);
+      G4SwapObj(&Rindex1, &Rindex2);
+    }
+
+    if(theFinish == polished)
+    {
+      theFacetNormal = theGlobalNormal;
+    }
+    else
+    {
+      theFacetNormal = GetFacetNormal(OldMomentum, theGlobalNormal);
+    }
+
+    PdotN = OldMomentum * theFacetNormal;
+    cost1 = -PdotN;
+    sint2 = 0; cost2 = 0.;
+
+    if (std::abs(cost1) < 1.0 - kCarTolerance)
+    {
+      sint1 = std::sqrt(1. - cost1 * cost1);
+      sint2 = sint1 * Rindex1 / Rindex2;
+      sintTL = sint1 * Rindex1 / fCoatedRindex;
+    } else
+    {
+      sint1 = 0.0;
+      sint2 = 0.0;
+      sintTL = 0.0;
+    }
+
+    if (sint1 > 0.0)
+    {
+      A_trans = OldMomentum.cross(theFacetNormal);
+      A_trans = A_trans.unit();
+      E1_perp = OldPolarization * A_trans;
+      E1pp = E1_perp * A_trans;
+      E1pl = OldPolarization - E1pp;
+      E1_parl = E1pl.mag();
+    }
+    else
+    {
+      A_trans = OldPolarization;
+      E1_perp = 0.0;
+      E1_parl = 1.0;
+    }
+
+    // Rename the variables to match those in paper
+    costh2 = cost1;
+    sinth3 = Rindex1*sint1/n3;
+    sinth4 = Rindex1*sint1/Rindex2;
+    costh3 = sqrt(1.-sinth3*sinth3);
+    if (cost1<0) costh3 *= -1;
+    costh4 = sqrt(1.-sinth4*sinth4);
+    if (cost1<0) costh4 *= -1;
+
+    // reflection and transmission coefficients
+    // TM =  p wave
+    r23p = (n2*costh3-n3*costh2)/(n2*costh3+n3*costh2);
+    t23p = 2.*n2*costh2/(n2*costh3+n3*costh2);
+    t32p = 2.*n3*costh3/(n2*costh3+n3*costh2);
+    r34p = (n3*costh4-n4*costh3)/(n3*costh4+n4*costh3);
+    t34p = 2.*n3*costh3/(n4*costh3+n3*costh4);
+
+    // TE = s wave
+    r23s = (n2*costh2-n3*costh3)/(n2*costh2+n3*costh3);
+    t23s = 2.*n2*costh2/(n2*costh2+n3*costh3);
+    t32s = 2.*n3*costh3/(n2*costh2+n3*costh3);
+    r34s = (n3*costh3-n4*costh4)/(n3*costh3+n4*costh4);
+    t34s = 2.*n3*costh3/(n3*costh3+n4*costh4);
+
+    delta = 2.*pi*fCoatedThickness*n3/wavelength*costh3;
+
+    rp = r23p+(t23p*t32p*r34p*exp(2.*i*delta))/(1.+r23p*r34p*exp(2.*i*delta));
+    tp = t23p*t34p*exp(i*delta)/(1.+r23p*r34p*exp(2.*i*delta));
+    Rp = real(rp*conj(rp));
+    Tp = real(n4*costh4/n2/costh2*tp*conj(tp));
+
+    rs = r23s+(t23s*t32s*r34s*exp(2.*i*delta))/(1.+r23s*r34s*exp(2.*i*delta));
+    ts = t23s*t34s*exp(i*delta)/(1.+r23s*r34s*exp(2.*i*delta));
+    Rs = real(rs*conj(rs));
+    Ts = real(n4*costh4/n2/costh2*ts*conj(ts));
+
+    Rtot = (Rs * E1_perp * E1_perp + Rp * E1_parl * E1_parl)  / (E1_perp * E1_perp + E1_parl * E1_parl);
+    Ttot = (Ts * E1_perp * E1_perp + Tp * E1_parl * E1_parl)  / (E1_perp * E1_perp + E1_parl * E1_parl);
+
+    G4double rdm = G4UniformRand();
+
+    if ( rdm < Rtot )
+    {
+      if(verboseLevel > 2)
+        G4cout << "Reflection from " << Material1->GetName() << " to "
+               << Material2->GetName() << G4endl;
+
+      //Swap = false;
+
+      if (sintTL >= 1.0 || sint2 >= 1.0)
+      {
+        theStatus = TotalInternalReflection;
+      }
+      else
+      {
+        theStatus = CoatedDielectricReflection;
+      }
+
+      PdotN = OldMomentum * theFacetNormal;
+      NewMomentum = OldMomentum - (2. * PdotN) * theFacetNormal;
+
+      if (sint1 > 0.0) {   // incident ray oblique
+
+        // not sure about +/- sign
+        E2_parl = -sqrt(Rp)*E1_parl;
+        if (std::arg(rp)<-pi/2 || std::arg(rp)>pi/2) E2_parl *= -1;
+        E2_perp = sqrt(Rs)*E1_perp;
+        if (std::arg(rs)<-pi/2 || std::arg(rs)>pi/2) E2_perp *= -1;
+
+        E2_total = E2_perp * E2_perp + E2_parl * E2_parl;
+        A_paral = NewMomentum.cross(A_trans);
+        A_paral = A_paral.unit();
+        E2_abs = std::sqrt(E2_total);
+        C_parl = E2_parl / E2_abs;
+        C_perp = E2_perp / E2_abs;
+
+        NewPolarization = C_parl * A_paral + C_perp * A_trans;
+
+      }
+      else
+      {               // incident ray perpendicular
+        if (Rindex2 > Rindex1)
+        {
+          NewPolarization = -OldPolarization;
+        }
+        else
+        {
+          NewPolarization = OldPolarization;
+        }
+      }
+
+    } else if ( rdm < Rtot + Ttot ) { // photon gets transmitted
+      if (verboseLevel > 2)
+        G4cout << "Transmission from " << Material1->GetName() << " to "
+               << Material2->GetName() << G4endl;
+
+      //Inside = !Inside;
+      through = true;
+
+      if (sintTL >= 1.0)
+      {
+         theStatus = CoatedDielectricFrustratedTransmission;
+      }
+      else
+      {
+         theStatus = CoatedDielectricRefraction;
+      }
+
+      if (sint1 > 0.0) {      // incident ray oblique
+
+         cost2 = std::sqrt(1. - sint2 * sint2);
+         if (cost1<0.0) cost2 *= -1;
+
+         alpha = cost1 - cost2 * (Rindex2 / Rindex1);
+         NewMomentum = OldMomentum + alpha * theFacetNormal;
+         NewMomentum = NewMomentum.unit();
+         A_paral = NewMomentum.cross(A_trans);
+         A_paral = A_paral.unit();
+         //again the sign may be wrong
+         E2_parl = sqrt(Tp)*E1_parl;
+         E2_perp = sqrt(Ts)*E1_perp;
+         if (std::arg(tp)<-pi/2 || std::arg(tp)>pi/2) E2_parl *= -1;
+         if (std::arg(ts)<-pi/2 || std::arg(ts)>pi/2) E2_perp *= -1;
+         E2_total = E2_perp * E2_perp + E2_parl * E2_parl;
+         E2_abs = std::sqrt(E2_total);
+         C_parl = E2_parl / E2_abs;
+         C_perp = E2_perp / E2_abs;
+
+         NewPolarization = C_parl * A_paral + C_perp * A_trans;
+
+      }
+      else
+      {                  // incident ray perpendicular
+         NewMomentum = OldMomentum;
+         NewPolarization = OldPolarization;
+      }
+      
+    }
+    else {
+      DoAbsorption();
+      return;
+    }
+
+    OldMomentum = NewMomentum.unit();
+    OldPolarization = NewPolarization.unit();
+    if ((theStatus == CoatedDielectricFrustratedTransmission) ||
+        (theStatus == CoatedDielectricRefraction))
+    {
+      done = (NewMomentum * theGlobalNormal <= 0.0);
+    }
+    else
+    {
+      done = (NewMomentum * theGlobalNormal >= -kCarTolerance);
+      //G4cout<<"NewMomentum * theGlobalNormal = "<<NewMomentum * theGlobalNormal<<" -kCarTolerance =  "<<-kCarTolerance<<G4endl;
+    }
+
+  } while (!done);
 }
