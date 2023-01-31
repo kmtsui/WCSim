@@ -38,10 +38,10 @@
 /***********************************************************
  *
  * This file contains the functions which construct a 
- * cylindrical WC detector.  It used by both the SK and 
- * LBNE WC detector modes.  It is called in the Construct()
+ * cylindrical WC detector.   It is called in the Construct()
  * method in WCSimDetectorConstruction.cc.
- *
+ * Only implements a single mPMT inside water for simple testing
+ * 
  * Sourcefile for the WCSimDetectorConstruction class
  *
  ***********************************************************/
@@ -57,8 +57,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructSinglemPMTWorld()
 
   debugMode = false;
 
-  //SetHyperK_HybridmPMT10PCGeometry();
-  
   WCPosition=0.;//Set the WC tube offset to zero
 
   WCIDRadius = WCIDDiameter/2.;
@@ -127,11 +125,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructSinglemPMTWorld()
   // ToDo: get these options from .mac
   checkOverlaps = true; 
   checkOverlapsPMT = false; 
-  // Optionally place parts of the detector. Very useful for visualization and debugging 
-  // geometry overlaps in detail.
-  placeBarrelPMTs = true;
-  placeCapPMTs = true;
-  placeBorderPMTs = true; 
 
   //-----------------------------------------------------
   // Volumes
@@ -145,9 +138,9 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructSinglemPMTWorld()
 			       0.*deg,
 			       360.*deg);
   
+  // Just a single water tube
   G4LogicalVolume* logicWC = 
     new G4LogicalVolume(solidWC,
-			//G4Material::GetMaterial("Air"),
       G4Material::GetMaterial(water),
 			"WC",
 			0,0,0);
@@ -246,15 +239,16 @@ If used here, uncomment the SetVisAttributes(WClogic) line, and comment out the 
 
     ///////////////   Single PMT placement
   G4RotationMatrix* WCPMTRotation = new G4RotationMatrix;
-  G4VPhysicalVolume* physiWCBarrelPMT =
-	new G4PVPlacement(WCPMTRotation,              // its rotation
-					  G4ThreeVector(0,0,0), 
-					  logicWCPMT2,                // its logical volume
-					  pmtname,//"WCPMT",             // its name
-					  logicWCBarrel,         // its mother volume
-					  false,                     // no boolean operations
-					  0,
-					  checkOverlaps);   
+  if(hybrid)
+    G4VPhysicalVolume* physiWCBarrelPMT =
+      new G4PVPlacement(WCPMTRotation,              // its rotation
+                G4ThreeVector(0,0,0), 
+                logicWCPMT2,                // its logical volume
+                pmtname,//"WCPMT",             // its name
+                logicWCBarrel,         // its mother volume
+                false,                     // no boolean operations
+                0,
+                checkOverlaps);   
 
   return logicWC;
 }

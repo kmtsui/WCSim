@@ -8,6 +8,7 @@
 #include <G4CrossSectionDataSetRegistry.hh>
 #include <G4HadronicInteractionRegistry.hh>
 #include "WCSimPhysicsListFactory.hh"
+#include "WCSimOpticalPhysics.hh"
 
 #include "GdNeutronHPCapture.hh"
 
@@ -147,7 +148,7 @@ void WCSimPhysicsListFactory::InitializeList(){
     }
     G4cout << "RegisterPhysics: OpticalPhysics" << G4endl; 
     //RegisterPhysics(new G4OpticalPhysics());
-    RegisterPhysics(new WCSimOpticalPhysics());
+    RegisterPhysics(new WCSimOpticalPhysics()); // new optical physics
     
     // Add Radioactive Decay:
     G4cout << "RegisterPhysics: RadioactiveDecayPhysics" << G4endl;

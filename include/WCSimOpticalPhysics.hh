@@ -1,3 +1,4 @@
+// Modified from G4OpticalPhysics.hh of geant4.10 to implement custom optical physics
 //
 // ********************************************************************
 // * License and Disclaimer                                           *

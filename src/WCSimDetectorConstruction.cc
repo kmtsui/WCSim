@@ -237,7 +237,7 @@ G4VPhysicalVolume* WCSimDetectorConstruction::Construct()
 
   // Select between HyperK and cylinder
   if (isEggShapedHyperK) logicWCBox = ConstructEggShapedHyperK();
-  else if (isSinglemPMT) logicWCBox = ConstructSinglemPMTWorld();
+  else if (isSinglemPMT) logicWCBox = ConstructSinglemPMTWorld(); // a test geometry with a single mPMT in a water tube
   else logicWCBox = ConstructCylinder(); 
   
   if(!logicWCBox){

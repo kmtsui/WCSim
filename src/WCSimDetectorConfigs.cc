@@ -1110,7 +1110,7 @@ void WCSimDetectorConstruction::Cylinder_60x74_3inch_40perCent()
 
 void WCSimDetectorConstruction::SetHyperK_SinglemPMTWorld()
 {
-  SetHyperK_HybridmPMTGeometry();
+  SetHyperK_HybridmPMTGeometry(); // Get the mPMT configs right
   isSinglemPMT = true;
 }
 

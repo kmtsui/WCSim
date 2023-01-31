@@ -1,3 +1,4 @@
+// Modified from G4OpticalPhysics.cc of geant4.10 to implement custom optical physics
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -63,7 +64,7 @@ G4ThreadLocal G4OpWLS*             WCSimOpticalPhysics::fWLSProcess = nullptr;
 G4ThreadLocal G4OpAbsorption*      WCSimOpticalPhysics::fAbsorptionProcess = nullptr;
 G4ThreadLocal G4OpRayleigh*        WCSimOpticalPhysics::fRayleighProcess = nullptr;
 G4ThreadLocal G4OpMieHG*           WCSimOpticalPhysics::fMieProcess = nullptr;
-G4ThreadLocal WCSimOpBoundaryProcess* WCSimOpticalPhysics::fBoundaryProcess = nullptr;
+G4ThreadLocal WCSimOpBoundaryProcess* WCSimOpticalPhysics::fBoundaryProcess = nullptr; // custom boundary process
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -179,6 +180,7 @@ void WCSimOpticalPhysics::ConstructProcess()
   fMieProcess = new G4OpMieHG();
   OpProcesses[kMieHG] = fMieProcess;
 
+  // custom boundary process
   fBoundaryProcess = new WCSimOpBoundaryProcess();
   fBoundaryProcess->SetInvokeSD(fInvokeSD);
   OpProcesses[kBoundary] = fBoundaryProcess;

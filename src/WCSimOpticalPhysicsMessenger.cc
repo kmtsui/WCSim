@@ -1,3 +1,5 @@
+// Modified from G4OpticalPhysicsMessenger.cc of geant4.10 to implement custom optical physics
+// All commands are the same
 //
 // ********************************************************************
 // * License and Disclaimer                                           *

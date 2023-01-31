@@ -459,7 +459,7 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 		} else if ( newValue == "HyperK_HybridmPMT10PC") {
 			WCSimDetector->SetHyperK_HybridmPMT10PCGeometry();
 		} else if ( newValue == "SinglemPMTWorld") {
-			WCSimDetector->SetHyperK_SinglemPMTWorld();
+			WCSimDetector->SetHyperK_SinglemPMTWorld(); // a test geometry with a single mPMT in a water tube
 		} else if ( newValue == "HyperK_HybridFake") {
 			WCSimDetector->SetHyperK_HybridFakeGeometry();
 		} else if ( newValue == "EggShapedHyperK") {

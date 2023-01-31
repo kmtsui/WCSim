@@ -1,3 +1,14 @@
+// Modified from G4OpBoundaryProcess.hh of geant4.10 to implement photocathode physics, which is a thin film of semiconductor alloy coated on glass
+// Model the reflection/transmission/absorption processes by the coated layer
+// 
+// CoatedDielectricDielectric() : 
+// Copy from geant4.11, which is based on https://ieeexplore.ieee.org/document/9875513
+// Model the alloy as a thin layer with real refractive index, then calculate reflection and transmission probability
+// Cannot handle total internal reflection when n1<n2
+// 
+// CoatedDielectricDielectric_alt() : 
+// Implementation based on https://arxiv.org/abs/physics/0408075v1
+// Model the alloy as a thin layer with real and imaginary refractive indices, then calculate absorption, reflection and transmission probability
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -128,7 +139,7 @@ enum WCSimOpBoundaryProcessStatus {  Undefined,
                                   GroundVM2000AirReflection,
                                   GroundVM2000GlueReflection,
                                   Dichroic,
-                                  CoatedDielectricReflection,
+                                  CoatedDielectricReflection, // new status code for thin film processes
                                   CoatedDielectricRefraction,
                                   CoatedDielectricFrustratedTransmission };
 
@@ -196,8 +207,6 @@ private:
         void DielectricLUTDAVIS();
 
         void DielectricDichroic();
-        void CoatedDielectricDielectric();
-        void CoatedDielectricDielectric_alt();
 
         void ChooseReflection();
         void DoAbsorption();
@@ -213,12 +222,14 @@ private:
                                  G4double ImaginaryRindex);
         // Returns the Reflectivity on a metalic surface
 
+        void CalculateReflectivity(void);
+
+        // Implementation of photocathode physics
+        void CoatedDielectricDielectric();
         G4double GetReflectivityThroughThinLayer(G4double sinTL, G4double E1_perp,
                                            G4double E1_parl, G4double wavelength,
-                                           G4double cost1, G4double cost2);
-        // Returns the Reflectivity on a coated surface
-
-        void CalculateReflectivity(void);
+                                           G4double costh1, G4double costh2);
+        void CoatedDielectricDielectric_alt();
 
         void BoundaryProcessVerbose(void) const;
 
@@ -273,7 +284,7 @@ private:
         size_t idx, idy;
         G4Physics2DVector* DichroicVector;
 
-        // Used by CoatedDielectricDielectric()
+        // Used by CoatedDielectricDielectric() and CoatedDielectricDielectric_alt()
         G4double fCoatedRindex, fCoatedRindexIm, fCoatedThickness;
         G4bool fCoatedFrustratedTransmission = true;
 
