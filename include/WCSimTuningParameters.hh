@@ -38,6 +38,9 @@ public:
   //TD 2019.7.16
   G4double GetPMTSatur() {return pmtsatur;}
   void SetPMTSatur(G4double rparam) {pmtsatur=rparam;}
+
+  G4int GetPMTSurfType() {return pmtsurftype;}
+  void SetPMTSurfType(G4double rparam) {pmtsurftype=rparam;}
   
 // TD 2019.6.26
   // G4double GetQoiff() {return qoiff;}
@@ -73,6 +76,9 @@ private:
   G4double ttsff;
   // G4double qoiff; // TD 2019.6.26
   G4double pmtsatur;
+
+  // PMT photocathode surface properties
+  G4int pmtsurftype;
 
   //For Top Veto - jl145
   G4double tvspacing;

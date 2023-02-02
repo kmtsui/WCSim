@@ -6,6 +6,7 @@
 #include "G4UIparameter.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithABool.hh" //jl145
+#include "G4UIcmdWithAnInteger.hh"
 
 
 WCSimTuningMessenger::WCSimTuningMessenger(WCSimTuningParameters* WCTuningPars):WCSimTuningParams(WCTuningPars) { 
@@ -64,6 +65,11 @@ WCSimTuningMessenger::WCSimTuningMessenger(WCSimTuningParameters* WCTuningPars):
   // NLTinfo->SetGuidance("Set the non-linearity info for time resolutions in PMTs");
   // NLTinfo->SetParameterName("NLTinfo",true);
   // NLTinfo->SetDefaultValue(0.0);
+
+  PMTSurfType = new G4UIcmdWithAnInteger("/WCSim/tuning/pmtsurftype",this);
+  PMTSurfType->SetGuidance("Set the PMT photocathode surface optical model");
+  PMTSurfType->SetParameterName("PMTSurfType",true);
+  PMTSurfType->SetDefaultValue(0);
   
   //jl145 - for Top Veto
   TVSpacing = new G4UIcmdWithADouble("/WCSim/tuning/tvspacing",this);
@@ -90,6 +96,8 @@ WCSimTuningMessenger::~WCSimTuningMessenger()
   delete PMTSatur;//TD 2019.7.16
   //delete Qoiff; //TD 2019.6.26
   //delete NLTinfo;
+
+  delete PMTSurfType;
   
   //jl145 - for Top Veto
   delete TVSpacing;
@@ -200,6 +208,13 @@ void WCSimTuningMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 //  printf(" Setting the non-linearity info for time resolutions in PMTs to %f\n",NLTinfo->GetNewDoubleValue(newValue));
 
 // }
+
+  else if(command == PMTSurfType) {
+
+   WCSimTuningParams->SetPMTSurfType(PMTSurfType->GetNewIntValue(newValue));
+
+   printf("Setting PMT photocathode surface optical model as Model %i (0 means default dielectric model)\n",PMTSurfType->GetNewIntValue(newValue));
+ }
 
   //jl145 - For Top Veto
 
