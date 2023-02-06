@@ -1230,6 +1230,12 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   // -------------------------------------------------------------------
   
  G4double capBlackSheetZ[4] = {-WCBlackSheetThickness*zflip, 0., 0., (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius)) *zflip};
+ // edge case where the endcap blacksheet becomes thinner
+ if (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius)<0) 
+ {
+   capBlackSheetZ[1] = capBlackSheetZ[3];
+   capBlackSheetZ[2] = capBlackSheetZ[3];
+ }
   G4double capBlackSheetRmin[4] = {0., 0., WCIDRadius, WCIDRadius};
   G4double capBlackSheetRmax[4] = {WCIDRadius+WCBlackSheetThickness, 
                                    WCIDRadius+WCBlackSheetThickness,
