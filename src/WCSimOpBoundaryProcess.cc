@@ -1830,7 +1830,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
   G4complex rp, tp, rs, ts;
   G4complex delta, costh2, costh3, costh4, sinth3, sinth4, n2, n3, n4;
   n2 = Rindex1;
-  n3 = fCoatedRindex+i*fCoatedRindexIm;
+  n3 = fCoatedRindex-i*fCoatedRindexIm;
   n4 = Rindex2;
   G4double Rp, Tp, Rs, Ts, Rtot, Ttot;
 
@@ -1909,7 +1909,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
     r34s = (n3*costh3-n4*costh4)/(n3*costh3+n4*costh4);
     t34s = 2.*n3*costh3/(n3*costh3+n4*costh4);
 
-    delta = 2.*pi*fCoatedThickness*n3/wavelength*costh3;
+    delta = -2.*pi*fCoatedThickness*n3/wavelength*costh3;
 
     rp = r23p+(t23p*t32p*r34p*exp(2.*i*delta))/(1.+r23p*r34p*exp(2.*i*delta));
     tp = t23p*t34p*exp(i*delta)/(1.+r23p*r34p*exp(2.*i*delta));
