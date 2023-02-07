@@ -6,6 +6,7 @@
 #include "G4UIparameter.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithABool.hh" //jl145
+#include "G4UIcmdWithAnInteger.hh"
 
 
 WCSimTuningMessenger::WCSimTuningMessenger(WCSimTuningParameters* WCTuningPars):WCSimTuningParams(WCTuningPars) { 
@@ -37,6 +38,11 @@ WCSimTuningMessenger::WCSimTuningMessenger(WCSimTuningParameters* WCTuningPars):
   Mieff->SetParameterName("Mieff",true);
   Mieff->SetDefaultValue(0.0);
 
+  PMTSurfType = new G4UIcmdWithAnInteger("/WCSim/tuning/pmtsurftype",this);
+  PMTSurfType->SetGuidance("Set the PMT photocathode surface optical model");
+  PMTSurfType->SetParameterName("PMTSurfType",true);
+  PMTSurfType->SetDefaultValue(0);
+  
   //jl145 - for Top Veto
   TVSpacing = new G4UIcmdWithADouble("/WCSim/tuning/tvspacing",this);
   TVSpacing->SetGuidance("Set the Top Veto PMT Spacing, in cm.");
@@ -58,6 +64,8 @@ WCSimTuningMessenger::~WCSimTuningMessenger()
   delete Rgcff;
   delete Mieff;
 
+  delete PMTSurfType;
+  
   //jl145 - for Top Veto
   delete TVSpacing;
   delete TopVeto;
@@ -116,6 +124,13 @@ void WCSimTuningMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 
   printf("Setting Mie scattering parameter %f\n",Mieff->GetNewDoubleValue(newValue));
 
+  }
+
+  if(command == PMTSurfType) {
+
+   WCSimTuningParams->SetPMTSurfType(PMTSurfType->GetNewIntValue(newValue));
+
+   printf("Setting PMT photocathode surface optical model as Model %i (0 means default dielectric model)\n",PMTSurfType->GetNewIntValue(newValue));
   }
 
   //jl145 - For Top Veto

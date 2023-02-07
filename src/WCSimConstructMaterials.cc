@@ -1209,13 +1209,25 @@ void WCSimDetectorConstruction::ConstructMaterials()
    myST2->AddProperty("EFFICIENCY", PP, EFFICIENCY_glasscath, NUM);
    //myST2->AddProperty("ABSLENGTH", PP, abslength_paint , NUM);
 
-   // Uncomment these to use new photocathode physics
-   // OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 11)); // Choose one of the two processes 
-   // OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 12)); // See WCSimOpBoundaryProcess for model details
-   // myST2->AddProperty("COATEDRINDEX", PP, COATEDRINDEX_glasscath, NUM);
-   // myST2->AddProperty("COATEDRINDEXIM", PP, COATEDRINDEXIM_glasscath, NUM);
-   // myST2->AddConstProperty("COATEDTHICKNESS", COATEDTHICKNESS_glasscath);
-   // myST2->AddConstProperty("COATEDFRUSTRATEDTRANSMISSION", COATEDFRUSTRATEDTRANSMISSION_glasscath);
+   // In order to use new photocathode physics
+   G4int pmtsurftype = WCSimTuningParams->GetPMTSurfType(); // Choose one of the two models, see WCSimOpBoundaryProcess for model details
+   if (pmtsurftype==1)
+   {
+      OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 11));
+   }
+   else if (pmtsurftype==2)
+   {
+      OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 12));
+   }
+   else if (pmtsurftype!=0)
+   {
+      printf("Invalid PMT photocathode surface optical model choice: %i, use the default dielectric model\n",pmtsurftype);
+   }
+   myST2->AddProperty("COATEDRINDEX", PP, COATEDRINDEX_glasscath, NUM);
+   myST2->AddProperty("COATEDRINDEXIM", PP, COATEDRINDEXIM_glasscath, NUM);
+   myST2->AddConstProperty("COATEDTHICKNESS", COATEDTHICKNESS_glasscath);
+   myST2->AddConstProperty("COATEDFRUSTRATEDTRANSMISSION", COATEDFRUSTRATEDTRANSMISSION_glasscath);
+
    OpGlassCathodeSurface->SetMaterialPropertiesTable(myST2);
 
    //Tyvek - jl145

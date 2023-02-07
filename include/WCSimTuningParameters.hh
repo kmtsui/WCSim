@@ -27,6 +27,9 @@ public:
   G4double GetMieff() {return mieff;}
   void SetMieff(G4double rparam) {mieff=rparam;}
 
+  G4int GetPMTSurfType() {return pmtsurftype;}
+  void SetPMTSurfType(G4double rparam) {pmtsurftype=rparam;}
+
   //For Top Veto - jl145
   G4double GetTVSpacing() {return tvspacing;}
   void SetTVSpacing(G4double tparam) {tvspacing=tparam;}
@@ -50,6 +53,9 @@ private:
   G4double abwff;
   G4double rgcff;
   G4double mieff;
+
+  // PMT photocathode surface properties
+  G4int pmtsurftype;
 
   //For Top Veto - jl145
   G4double tvspacing;

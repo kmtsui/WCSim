@@ -12,3 +12,6 @@
 /WCSim/tuning/tvspacing 100
 
 
+# Paramater to set photocathode model
+# Set to "0" to use default model, "1" or "2" to use new models
+/WCSim/tuning/pmtsurftype 0
