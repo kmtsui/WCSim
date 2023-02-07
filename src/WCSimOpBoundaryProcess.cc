@@ -638,11 +638,11 @@ void WCSimOpBoundaryProcess::BoundaryProcessVerbose() const
         if ( theStatus == Dichroic )
                 G4cout << " *** Dichroic Transmission *** " << G4endl;
         if(theStatus == CoatedDielectricReflection)
-                G4cout << " *** Coated Dielectric Reflection *** ";
+                G4cout << " *** Coated Dielectric Reflection *** " << G4endl;
         if(theStatus == CoatedDielectricRefraction)
-                G4cout << " *** Coated Dielectric Refraction *** ";
+                G4cout << " *** Coated Dielectric Refraction *** " << G4endl;
         if(theStatus == CoatedDielectricFrustratedTransmission)
-                G4cout << " *** Coated Dielectric Frustrated Transmission *** ";
+                G4cout << " *** Coated Dielectric Frustrated Transmission *** " << G4endl;
 }
 
 G4ThreeVector
