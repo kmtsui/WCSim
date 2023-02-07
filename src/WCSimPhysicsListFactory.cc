@@ -7,6 +7,7 @@
 #include <G4NeutronCaptureXS.hh>
 #include <G4CrossSectionDataSetRegistry.hh>
 #include <G4HadronicInteractionRegistry.hh>
+#include <G4RadioactiveDecayPhysics.hh>
 #include "WCSimPhysicsListFactory.hh"
 
 #include "GdNeutronHPCapture.hh"
