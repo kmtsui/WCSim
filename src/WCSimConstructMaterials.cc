@@ -1085,6 +1085,13 @@ void WCSimDetectorConstruction::ConstructMaterials()
    G4double EFFICIENCY_glasscath[NUM] =
      { 0.0, 0.0 };
 
+   // Coated surface properties for new photocathode physics
+   G4double COATEDRINDEX_glasscath[NUM] =
+     { 2.5, 2.5 };
+   G4double COATEDRINDEXIM_glasscath[NUM] =
+     { 1.5, 1.5 };
+   G4double COATEDTHICKNESS_glasscath = 20*nm;
+   G4int COATEDFRUSTRATEDTRANSMISSION_glasscath = 1;
 
    // jl145 ----
    //
@@ -1201,6 +1208,14 @@ void WCSimDetectorConstruction::ConstructMaterials()
    myST2->AddProperty("REFLECTIVITY", PP, REFLECTIVITY_glasscath, NUM);
    myST2->AddProperty("EFFICIENCY", PP, EFFICIENCY_glasscath, NUM);
    //myST2->AddProperty("ABSLENGTH", PP, abslength_paint , NUM);
+
+   // Uncomment these to use new photocathode physics
+   // OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 11)); // Choose one of the two processes 
+   // OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 12)); // See WCSimOpBoundaryProcess for model details
+   // myST2->AddProperty("COATEDRINDEX", PP, COATEDRINDEX_glasscath, NUM);
+   // myST2->AddProperty("COATEDRINDEXIM", PP, COATEDRINDEXIM_glasscath, NUM);
+   // myST2->AddConstProperty("COATEDTHICKNESS", COATEDTHICKNESS_glasscath);
+   // myST2->AddConstProperty("COATEDFRUSTRATEDTRANSMISSION", COATEDFRUSTRATEDTRANSMISSION_glasscath);
    OpGlassCathodeSurface->SetMaterialPropertiesTable(myST2);
 
    //Tyvek - jl145

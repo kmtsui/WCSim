@@ -9,6 +9,7 @@
 #include <G4HadronicInteractionRegistry.hh>
 #include <G4RadioactiveDecayPhysics.hh>
 #include "WCSimPhysicsListFactory.hh"
+#include "WCSimOpticalPhysics.hh"
 
 #include "GdNeutronHPCapture.hh"
 

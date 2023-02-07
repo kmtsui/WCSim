@@ -9,7 +9,6 @@
 
 #include "WCSimPhysicsListFactoryMessenger.hh"
 #include "WCSimRootOptions.hh"
-#include "WCSimOpticalPhysics.hh"
 
 //class WCSimPhysicsList;
 

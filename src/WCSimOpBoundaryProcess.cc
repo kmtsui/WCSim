@@ -1,3 +1,14 @@
+// Modified from G4OpBoundaryProcess.cc of geant4.10 to implement photocathode physics, which is a thin film of semiconductor alloy coated on glass
+// Model the reflection/transmission/absorption processes by the coated layer
+// 
+// CoatedDielectricDielectric() : 
+// Copy from geant4.11, which is based on https://ieeexplore.ieee.org/document/9875513
+// Model the alloy as a thin layer with real refractive index, then calculate reflection and transmission probability
+// Cannot handle total internal reflection when n1<n2
+// 
+// CoatedDielectricDielectric_alt() : 
+// Implementation based on https://arxiv.org/abs/physics/0408075v1
+// Model the alloy as a thin layer with real and imaginary refractive indices, then calculate absorption, reflection and transmission probability
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -142,6 +153,7 @@ WCSimOpBoundaryProcess::WCSimOpBoundaryProcess(const G4String& processName,
         Rindex1 = Rindex2 = 1.;
         cost1 = cost2 = sint1 = sint2 = 0.;
 
+        // Thin film properties
         fCoatedRindex = 1;
         fCoatedRindexIm = 0;
         fCoatedThickness = 0;
@@ -523,9 +535,12 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
                 }
              }
           }
-          //G4cout<< thePrePV->GetName() << " " <<thePostPV->GetName(); BoundaryProcessVerbose();
         }
-        else if (type == x_ray + 1) // brute-force index to get coated surface
+        else if (type == x_ray + 11) // brute-force index to get coated surface processes
+        {
+            CoatedDielectricDielectric();
+        }
+        else if (type == x_ray + 12)
         {
             CoatedDielectricDielectric_alt();
         }
@@ -1478,6 +1493,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
   }
 
   MPT = OpticalSurface->GetMaterialPropertiesTable();
+  // thin film properties to be defined in WCSimConstructMaterials.cc
   if((pp = MPT->GetProperty("COATEDRINDEX")))
   {
     fCoatedRindex = pp->Value(thePhotonMomentum);
@@ -1486,6 +1502,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
   {
     fCoatedThickness = MPT->GetConstProperty("COATEDTHICKNESS");
   }
+  // allows frustrated transmission through the film or not
   if(MPT->ConstPropertyExists("COATEDFRUSTRATEDTRANSMISSION"))
   {
     fCoatedFrustratedTransmission =
@@ -1612,10 +1629,9 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
 
         NewPolarization = C_parl * A_paral + C_perp * A_trans;
 
-      // ad-hoc handle of total internal reflection
-      if (sint2*sint2>1.)
-         NewPolarization = -OldPolarization + (2.*OldPolarization * theFacetNormal)*theFacetNormal;
-
+        // ad-hoc handle of total internal reflection
+        if (sint2*sint2>1.)
+          NewPolarization = -OldPolarization + (2.*OldPolarization * theFacetNormal)*theFacetNormal;
       }
       else
       {               // incident ray perpendicular
@@ -1637,6 +1653,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
       //Inside = !Inside;
       through = true;
 
+      // Need to define non-zero efficiency to trigger absorption process
       if (theEfficiency > 0.)
       {
         DoAbsorption();
@@ -1793,6 +1810,8 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
   }
 
   MPT = OpticalSurface->GetMaterialPropertiesTable();
+  // thin film properties to be defined in WCSimConstructMaterials.cc
+  // need both real and imaginary refractive indices
   if((pp = MPT->GetProperty("COATEDRINDEX")))
   {
     fCoatedRindex = pp->Value(thePhotonMomentum);
@@ -1804,11 +1823,6 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
   if(MPT->ConstPropertyExists("COATEDTHICKNESS"))
   {
     fCoatedThickness = MPT->GetConstProperty("COATEDTHICKNESS");
-  }
-  if(MPT->ConstPropertyExists("COATEDFRUSTRATEDTRANSMISSION")) // this is not used 
-  {
-    fCoatedFrustratedTransmission =
-      (G4bool)MPT->GetConstProperty("COATEDFRUSTRATEDTRANSMISSION");
   }
 
   G4double sintTL;
@@ -1948,7 +1962,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
 
       if (sint1 > 0.0) {   // incident ray oblique
 
-        // not sure about +/- sign
+        // not sure about +/- sign, also ignore the phase change
         E2_parl = -sqrt(Rp)*E1_parl;
         if (std::arg(rp)<-pi/2 || std::arg(rp)>pi/2) E2_parl *= -1;
         E2_perp = sqrt(Rs)*E1_perp;
@@ -1996,14 +2010,14 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
       if (sint1 > 0.0) {      // incident ray oblique
 
          cost2 = std::sqrt(1. - sint2 * sint2);
-         if (cost1<0.0) cost2 *= -1;
+         if ( cost1 < 0.0 ) cost2 *= -1;
 
          alpha = cost1 - cost2 * (Rindex2 / Rindex1);
          NewMomentum = OldMomentum + alpha * theFacetNormal;
          NewMomentum = NewMomentum.unit();
          A_paral = NewMomentum.cross(A_trans);
          A_paral = A_paral.unit();
-         //again the sign may be wrong
+         // again the sign may be wrong
          E2_parl = sqrt(Tp)*E1_parl;
          E2_perp = sqrt(Ts)*E1_perp;
          if (std::arg(tp)<-pi/2 || std::arg(tp)>pi/2) E2_parl *= -1;
@@ -2038,7 +2052,6 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
     else
     {
       done = (NewMomentum * theGlobalNormal >= -kCarTolerance);
-      //G4cout<<"NewMomentum * theGlobalNormal = "<<NewMomentum * theGlobalNormal<<" -kCarTolerance =  "<<-kCarTolerance<<G4endl;
     }
 
   } while (!done);
