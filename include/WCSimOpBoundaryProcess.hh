@@ -197,6 +197,7 @@ private:
 
         void DielectricDichroic();
         void CoatedDielectricDielectric();
+        void CoatedDielectricDielectric_alt();
 
         void ChooseReflection();
         void DoAbsorption();
@@ -273,7 +274,7 @@ private:
         G4Physics2DVector* DichroicVector;
 
         // Used by CoatedDielectricDielectric()
-        G4double fCoatedRindex, fCoatedThickness;
+        G4double fCoatedRindex, fCoatedRindexIm, fCoatedThickness;
         G4bool fCoatedFrustratedTransmission = true;
 
 
