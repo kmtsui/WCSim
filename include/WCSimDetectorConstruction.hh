@@ -274,6 +274,10 @@ public:
   void   SetIsNuPrismBeamTest_16cShort(G4bool choice) {isNuPrismBeamTest_16cShort = choice;}
   G4bool GetIsNuPrismBeamTest_16cShort() {return isNuPrismBeamTest_16cShort;}
   
+  // Set if useReplica
+  void   SetUseReplica(G4bool choice) {useReplica = choice;}
+  G4bool GetUseReplica() {return useReplica;}
+
   void   SetPMTType(G4String type) {
     WCPMTType = type;
     //And update everything that is affected by a new PMT
@@ -388,11 +392,18 @@ private:
 
   G4LogicalVolume* ConstructCaps(G4int zflip);
 
+  G4LogicalVolume* ConstructCylinderNoReplica();
+  G4LogicalVolume* ConstructCapsNoReplica(G4int zflip);
+
   void  ConstructMaterials();
 
   G4LogicalVolume* logicWCBarrelCellBlackSheet;
   G4LogicalVolume* logicWCTowerBlackSheet;
   G4double capAssemblyHeight;
+
+  G4LogicalVolume* logicWCBarrelAnnulusBlackSheet;
+  G4LogicalVolume* logicWCBarrelBorderBlackSheet;
+  G4LogicalVolume* logicWCExtraBorderBlackSheet;
 
   G4bool WCAddGd;
 
@@ -534,6 +545,8 @@ private:
   G4bool isNuPrismBeamTest_16cShort; // Jul 02 2021 L.Anthony
   G4String WCPMTType;
   // G4double WCPMTCoverage; //TF: already using this variable "WCPMTPercentCoverage
+
+  G4bool useReplica;
 
   // *** Begin egg-shaped HyperK Geometry ***
 

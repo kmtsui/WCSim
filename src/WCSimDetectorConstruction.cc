@@ -38,6 +38,8 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuning
   isEggShapedHyperK  = false;
   isNuPrism  = false;
 
+  useReplica = true;
+
   debugMode = false;
 
   myConfiguration = DetConfig;
@@ -215,6 +217,7 @@ G4VPhysicalVolume* WCSimDetectorConstruction::Construct()
 
   // Select between HyperK and cylinder
   if (isEggShapedHyperK) logicWCBox = ConstructEggShapedHyperK();
+  else if (!useReplica) logicWCBox = ConstructCylinderNoReplica(); 
   else logicWCBox = ConstructCylinder(); 
   
   if(!logicWCBox){
