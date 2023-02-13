@@ -79,6 +79,8 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithADoubleAndUnit* SetDetectorVerticalPosition;
   G4UIcmdWithADoubleAndUnit* SetDetectorDiameter;
 
+  G4UIcmdWithABool* UseReplica;
+
 };
 
 #endif

@@ -362,6 +362,11 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   SetDetectorDiameter->SetDefaultValue(6.);
   SetDetectorDiameter->SetUnitCategory("Length");
   SetDetectorDiameter->SetDefaultUnit("m");
+
+  UseReplica = new G4UIcmdWithABool("/WCSim/PMT/ReplicaPlacement",this);
+  UseReplica->SetGuidance("Use replica method to place PMTs (default = true)");
+  UseReplica->SetParameterName("UseReplica",true);
+  UseReplica->SetDefaultValue(true);
 }
 
 WCSimDetectorMessenger::~WCSimDetectorMessenger()
@@ -387,6 +392,8 @@ WCSimDetectorMessenger::~WCSimDetectorMessenger()
   delete mPMT_CylRadius;
   delete WCSimDir;
   delete mPMTDir;
+
+  delete UseReplica;
 }
 
 void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
@@ -646,6 +653,11 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 					      WCSimDetector->GetWCIDDiameter(),
 					      WCSimDetector->GetWCIDVerticalPosition());
 					      } */
+	}
+
+	if (command == UseReplica){
+	  G4cout << "Use replica method to place PMTs ?  " << newValue << G4endl;
+	  WCSimDetector->SetUseReplica(UseReplica->GetNewBoolValue(newValue));
 	}
 
 	if(command == WCConstruct) {
