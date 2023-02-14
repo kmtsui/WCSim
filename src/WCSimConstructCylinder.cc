@@ -2148,8 +2148,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
         for(G4double i = 0; i < WCPMTperCellHorizontal; i++){
           for(G4double j = 0; j < WCPMTperCellVertical; j++){
             G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
-                  -barrelCellWidth/2.+(i+0.5)*horizontalSpacing,
-                  -barrelCellHeight/2.+(j+0.5)*verticalSpacing + z_offset);
+                  -barrelCellWidth/2.+(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
+                  -barrelCellHeight/2.+(j+0.5)*verticalSpacing + z_offset + G4RandGauss::shoot(0,pmtPosVar));
 
             PMTPosition.rotateZ(phi_offset);  // align with the symmetry 
 	                                            //axes of the cell 
@@ -2197,8 +2197,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
         for(G4double i = 0; i < (WCBarrelNumPMTHorizontal-WCBarrelRingNPhi*WCPMTperCellHorizontal); i++){
           for(G4double j = 0; j < WCPMTperCellVertical; j++){
             G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
-                  towerWidth/2.-(i+0.5)*horizontalSpacing,
-                      -barrelCellHeight/2.+(j+0.5)*verticalSpacing+z_offset);
+                  towerWidth/2.-(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
+                      -barrelCellHeight/2.+(j+0.5)*verticalSpacing+z_offset + G4RandGauss::shoot(0,pmtPosVar));
             PMTPosition.rotateZ(-(2*pi-totalAngle)/2.); // align with the symmetry 
                                                         //axes of the cell 
 
@@ -2782,12 +2782,12 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
 
         // Jun. 04, 2020 by M.Shinoki
         // For IWCD (NuPRISM_mPMT Geometry)
-        xoffset = i*WCCapPMTSpacing + WCCapPMTSpacing*0.5;
-        yoffset = j*WCCapPMTSpacing + WCCapPMTSpacing*0.5;
+        xoffset = i*WCCapPMTSpacing + WCCapPMTSpacing*0.5 + G4RandGauss::shoot(0,pmtPosVar);
+        yoffset = j*WCCapPMTSpacing + WCCapPMTSpacing*0.5 + G4RandGauss::shoot(0,pmtPosVar);
         // For WCTE (NuPRISMBeamTest_mPMT Geometry)
         if (isNuPrismBeamTest || isNuPrismBeamTest_16cShort){
-          xoffset = i*WCCapPMTSpacing;
-          yoffset = j*WCCapPMTSpacing;
+          xoffset = i*WCCapPMTSpacing + G4RandGauss::shoot(0,pmtPosVar);
+          yoffset = j*WCCapPMTSpacing + G4RandGauss::shoot(0,pmtPosVar);
         }
         G4ThreeVector cellpos = G4ThreeVector(xoffset, yoffset, 0);     
         //      G4double WCBarrelEffRadius = WCIDDiameter/2. - WCCapPMTSpacing;
@@ -2849,8 +2849,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
       for(G4double i = 0; i < WCPMTperCellHorizontal; i++){
         for(G4double j = 0; j < WCPMTperCellVertical; j++){
           G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
-                -barrelCellWidth/2.+(i+0.5)*horizontalSpacing,
-                (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip);
+                -barrelCellWidth/2.+(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
+                (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
           PMTPosition.rotateZ(phi_offset);  // align with the symmetry axes of the cell 
 
           G4VPhysicalVolume* physiWCBarrelBorderPMT =
@@ -2887,8 +2887,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
       for(G4double i = 0; i < (WCBarrelNumPMTHorizontal-WCBarrelRingNPhi*WCPMTperCellHorizontal); i++){
         for(G4double j = 0; j < WCPMTperCellVertical; j++){
           G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
-                towerWidth/2.-(i+0.5)*horizontalSpacing,
-                    (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip);
+                towerWidth/2.-(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
+                    (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
           PMTPosition.rotateZ(-(2*pi-totalAngle)/2.); // align with the symmetry 
                                                       //axes of the cell 
           

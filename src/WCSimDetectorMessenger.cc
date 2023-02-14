@@ -367,6 +367,14 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   UseReplica->SetGuidance("Use replica method to place PMTs (default = true)");
   UseReplica->SetParameterName("UseReplica",true);
   UseReplica->SetDefaultValue(true);
+
+  // Set the vertical position of the nuPRISM-lite detector
+  PMTPosVar = new G4UIcmdWithADoubleAndUnit("/WCSim/PMT/PositionVariation", this);
+  PMTPosVar->SetGuidance("Set the position variation in PMT placement (unit: mm cm m). Default will be 0 mm");
+  PMTPosVar->SetParameterName("PMTPositionVariation", false);
+  PMTPosVar->SetDefaultValue(0.0);
+  PMTPosVar->SetUnitCategory("Length");
+  PMTPosVar->SetDefaultUnit("mm");
 }
 
 WCSimDetectorMessenger::~WCSimDetectorMessenger()
@@ -394,6 +402,7 @@ WCSimDetectorMessenger::~WCSimDetectorMessenger()
   delete mPMTDir;
 
   delete UseReplica;
+  delete PMTPosVar;
 }
 
 void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
@@ -660,6 +669,11 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	  WCSimDetector->SetUseReplica(UseReplica->GetNewBoolValue(newValue));
 	}
 
+	if (command == PMTPosVar) {
+	  G4cout << "Apply fluctuations to PMT placement: sigma = " << newValue << G4endl;
+	  WCSimDetector->SetPMTPosVar(PMTPosVar->GetNewDoubleValue(newValue));
+	}
+	
 	if(command == WCConstruct) {
 	  WCSimDetector->UpdateGeometry();
 	}

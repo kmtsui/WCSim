@@ -39,6 +39,7 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuning
   isNuPrism  = false;
 
   useReplica = true;
+  pmtPosVar = 0;
 
   debugMode = false;
 

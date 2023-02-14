@@ -278,6 +278,9 @@ public:
   void   SetUseReplica(G4bool choice) {useReplica = choice;}
   G4bool GetUseReplica() {return useReplica;}
 
+  void SetPMTPosVar(G4double choice) {pmtPosVar = choice;}
+  G4double GetPMTPosVar() {return pmtPosVar;}
+
   void   SetPMTType(G4String type) {
     WCPMTType = type;
     //And update everything that is affected by a new PMT
@@ -547,6 +550,7 @@ private:
   // G4double WCPMTCoverage; //TF: already using this variable "WCPMTPercentCoverage
 
   G4bool useReplica;
+  G4double pmtPosVar;
 
   // *** Begin egg-shaped HyperK Geometry ***
 

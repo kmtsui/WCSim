@@ -80,6 +80,7 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithADoubleAndUnit* SetDetectorDiameter;
 
   G4UIcmdWithABool* UseReplica;
+  G4UIcmdWithADoubleAndUnit* PMTPosVar;
 
 };
 
