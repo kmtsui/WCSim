@@ -40,6 +40,7 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuning
 
   useReplica = true;
   pmtPosVar = 0;
+  topRadiusChange = 0; midRadiusChange = 0; botRadiusChange = 0;
 
   debugMode = false;
 

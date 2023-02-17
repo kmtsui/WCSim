@@ -274,12 +274,21 @@ public:
   void   SetIsNuPrismBeamTest_16cShort(G4bool choice) {isNuPrismBeamTest_16cShort = choice;}
   G4bool GetIsNuPrismBeamTest_16cShort() {return isNuPrismBeamTest_16cShort;}
   
-  // Set if useReplica
+  // Set if useReplica in PMT placement
   void   SetUseReplica(G4bool choice) {useReplica = choice;}
   G4bool GetUseReplica() {return useReplica;}
 
+  // Random fluctuation in PMT placement
   void SetPMTPosVar(G4double choice) {pmtPosVar = choice;}
   G4double GetPMTPosVar() {return pmtPosVar;}
+
+  // ID radius change in PMT placement
+  void SetRadiusChange(G4double top, G4double mid, G4double bot) {topRadiusChange = top; midRadiusChange = mid; botRadiusChange = bot;}
+  G4double GetRadiusChange(G4double zpos)
+  {
+    return zpos < 0 ? midRadiusChange + (botRadiusChange-midRadiusChange)*std::min(-zpos/(WCIDHeight/2.),1.) : 
+                      midRadiusChange + (topRadiusChange-midRadiusChange)*std::min( zpos/(WCIDHeight/2.),1.);
+  }
 
   void   SetPMTType(G4String type) {
     WCPMTType = type;
@@ -549,8 +558,10 @@ private:
   G4String WCPMTType;
   // G4double WCPMTCoverage; //TF: already using this variable "WCPMTPercentCoverage
 
+  // New variables for PMT placement
   G4bool useReplica;
   G4double pmtPosVar;
+  G4double topRadiusChange, midRadiusChange, botRadiusChange;
 
   // *** Begin egg-shaped HyperK Geometry ***
 
