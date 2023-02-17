@@ -2382,19 +2382,19 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
   //------------------------------------------------------------
   // add blacksheet to the border cells.
   // ---------------------------------------------------------
-
-  G4double annulusBlackSheetRmax[2] = { WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2+barrelCellHeight)) + WCBlackSheetThickness,
+  // the part between the barrel ring and cap was missing before
+  G4double annulusBlackSheetRmax[3] = { WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2+barrelCellHeight+(WCIDRadius-innerAnnulusRadius))) + WCBlackSheetThickness,
+                                        WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2+barrelCellHeight)) + WCBlackSheetThickness,
                                         WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2)) + WCBlackSheetThickness};
-  G4double annulusBlackSheetRmin[2] = { WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2+barrelCellHeight)),
+  G4double annulusBlackSheetRmin[3] = { WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2+barrelCellHeight+(WCIDRadius-innerAnnulusRadius))),
+                                        WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2+barrelCellHeight)),
                                         WCIDRadius + GetRadiusChange(-zflip*(mainAnnulusHeight/2))};
-  G4double RingZ[2] = {-barrelCellHeight/2.*zflip,
-                        barrelCellHeight/2.*zflip}; // direction matters
   G4Polyhedra* solidWCBarrelBlackSheet = new G4Polyhedra("WCBarrelBorderBlackSheet",
                                                    0, // phi start
                                                    totalAngle, //total phi
                                                    (G4int)WCBarrelRingNPhi, //NPhi-gon
-                                                   2,
-                                                   RingZ,
+                                                   3,
+                                                   borderAnnulusZ,
                                                    annulusBlackSheetRmin,
                                                    annulusBlackSheetRmax);
 
@@ -2460,8 +2460,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
   // we have to declare the logical Volumes 
   // outside of the if block to access it later on 
   G4LogicalVolume* logicWCExtraBorderCell;
-  G4double towerBSRmin[2];
-  G4double towerBSRmax[2];
+  G4double towerBSRmin[3];
+  G4double towerBSRmax[3];
   if(!(WCBarrelRingNPhi*WCPMTperCellHorizontal == WCBarrelNumPMTHorizontal)){
     //----------------------------------------------
     // also the extra tower need special cells at the 
@@ -2507,7 +2507,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
 	  //TF vis.
 
     // add black sheet to the ExtraBorder cell
-    for(int i = 0; i < 2; i++){
+    for(int i = 0; i < 3; i++){
       towerBSRmin[i] = annulusBlackSheetRmin[i]/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.);
       towerBSRmax[i] = annulusBlackSheetRmax[i]/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.);
     }
@@ -2515,8 +2515,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
 			   totalAngle-2.*pi,//+dPhi/2., // phi start
 			   2.*pi -  totalAngle -G4GeometryTolerance::GetInstance()->GetSurfaceTolerance()/(10.*m), //phi end
 		     1, //NPhi-gon
-			   2,
-			   RingZ,
+			   3,
+			   borderAnnulusZ,
 			   towerBSRmin,
 			   towerBSRmax);
     logicWCExtraBorderBlackSheet =
@@ -2877,7 +2877,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
 
   if(placeBorderPMTs){
 
-    G4double barrelCellWidth = (annulusBlackSheetRmin[1]+annulusBlackSheetRmin[0])*tan(dPhi/2.);
+    G4double barrelCellWidth = (annulusBlackSheetRmin[1]+annulusBlackSheetRmin[2])*tan(dPhi/2.);
     G4double horizontalSpacing   = barrelCellWidth/WCPMTperCellHorizontal;
     G4double verticalSpacing     = barrelCellHeight/WCPMTperCellVertical;
 
@@ -2904,7 +2904,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
                 -barrelCellWidth/2.+(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
                 (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
-          G4double newR = annulusBlackSheetRmin[0]+(annulusBlackSheetRmin[1]-annulusBlackSheetRmin[0])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);
+          G4double newR = annulusBlackSheetRmin[1]+(annulusBlackSheetRmin[2]-annulusBlackSheetRmin[1])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);
           PMTPosition.setX(newR);
           PMTPosition.rotateZ(phi_offset);  // align with the symmetry axes of the cell 
 
@@ -2930,7 +2930,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
     //------------------------------------------------------------
     if(!(WCBarrelRingNPhi*WCPMTperCellHorizontal == WCBarrelNumPMTHorizontal)){
 
-      G4double dth = atan((towerBSRmin[1]-towerBSRmin[0])/(RingZ[1]-RingZ[0]));
+      G4double dth = atan((towerBSRmin[2]-towerBSRmin[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]));
       G4RotationMatrix* PMTRotation = new G4RotationMatrix;
       if(orientation == PERPENDICULAR)
         PMTRotation->rotateY(90.*deg); //if mPMT: perp to wall
@@ -2944,7 +2944,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
       else if(orientation == VERTICAL)
         PMTRotation->rotateY(-dth); 
                                                   
-      G4double towerWidth = (annulusBlackSheetRmin[1]+annulusBlackSheetRmin[0])/2.*tan(2*pi-totalAngle);
+      G4double towerWidth = (annulusBlackSheetRmin[1]+annulusBlackSheetRmin[2])/2.*tan(2*pi-totalAngle);
 
       G4double horizontalSpacing   = towerWidth/(WCBarrelNumPMTHorizontal-WCBarrelRingNPhi*WCPMTperCellHorizontal);
       G4double verticalSpacing     = barrelCellHeight/WCPMTperCellVertical;
@@ -2954,7 +2954,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
                 towerWidth/2.-(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
                     (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
-          G4double newR = towerBSRmin[0]+(towerBSRmin[1]-towerBSRmin[0])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);
+          G4double newR = towerBSRmin[1]+(towerBSRmin[2]-towerBSRmin[1])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);
           PMTPosition.setX(newR);
           PMTPosition.rotateZ(-(2*pi-totalAngle)/2.); // align with the symmetry axes of the cell 
           
