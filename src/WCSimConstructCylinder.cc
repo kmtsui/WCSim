@@ -932,6 +932,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   G4double borderAnnulusZ[3] = {(-barrelCellHeight/2.-(WCIDRadius-innerAnnulusRadius))*zflip, 
 								-barrelCellHeight/2.*zflip,
 								barrelCellHeight/2.*zflip};
+  // to check edge case
+  if (WCBarrelPMTOffset < (WCIDRadius-innerAnnulusRadius)) borderAnnulusZ[0] = (-barrelCellHeight/2.-WCBarrelPMTOffset)*zflip;
   G4double borderAnnulusRmin[3] = { WCIDRadius, innerAnnulusRadius, innerAnnulusRadius};
   G4double borderAnnulusRmax[3] = {outerAnnulusRadius, outerAnnulusRadius,outerAnnulusRadius};
   G4Polyhedra* solidWCBarrelBorderRing = new G4Polyhedra("WCBarrelBorderRing",
@@ -1126,7 +1128,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 					   (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius))*zflip,
 					   (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius))*zflip,
 					   WCBarrelPMTOffset*zflip} ;
-
+  // to check edge case
+  if (WCBarrelPMTOffset < (WCIDRadius-innerAnnulusRadius)) { capZ[1] = 0; capZ[2] = 0; }
   G4double capRmin[4] = {  0. , 0., 0., 0.} ;
   G4double capRmax[4] = {outerAnnulusRadius, outerAnnulusRadius,  WCIDRadius, innerAnnulusRadius};
   G4VSolid* solidWCCap;
