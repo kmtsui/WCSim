@@ -33,6 +33,8 @@ private:
   G4float percentageOfCherenkovPhotonsToDraw;
 
   WCSimTrackingMessenger* messenger;
+  
+  G4int primaryID;
 };
 
 
