@@ -3,6 +3,7 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ThreeVector.hh"
+#include "G4ParticleDefinition.hh"
 #include "globals.hh"
 
 #include "WCSimEnumerations.hh"
@@ -119,6 +120,11 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         float fNuBeamAng;
         float fNuPlanePos[3];
 
+        bool needConversion;
+        bool foundConversion;
+        const G4ParticleDefinition * conversionProductParticle[2];
+        G4ThreeVector conversionProductMomentum[2];
+	
     public:
 
         inline TFile* GetInputRootrackerFile(){ return fInputRootrackerFile;}
@@ -160,6 +166,13 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   
         inline void SetPoissonPMTMean(G4double val){ poissonPMTMean = val; }
         inline G4double GetPoissonPMTMean(){ return poissonPMTMean; }
+	
+        inline bool IsConversionFound(){ return foundConversion; }
+        inline void FoundConversion(){ foundConversion = true; }
+        inline void SetConversionProductParticle(int i, const G4ParticleDefinition *p) { conversionProductParticle[i] = p; }
+        inline void SetConversionProductMomentum(int i, const G4ThreeVector& p) { conversionProductMomentum[i] = p; }
+        inline void SetNeedConversion(bool choice) { needConversion = choice; foundConversion = !choice; }
+        inline bool NeedsConversion() { return needConversion; }
 };
 
 #endif
