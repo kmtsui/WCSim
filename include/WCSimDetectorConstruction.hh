@@ -559,9 +559,13 @@ private:
   // G4double WCPMTCoverage; //TF: already using this variable "WCPMTPercentCoverage
 
   // New variables for PMT placement
-  G4bool useReplica;
+  G4bool useReplica, readFromTable;
   G4double pmtPosVar;
   G4double topRadiusChange, midRadiusChange, botRadiusChange;
+  std::vector<G4ThreeVector> pmtPos, pmtDir;
+  std::string pmtPositionFile;
+  void ReadGeometryTableFromFile();
+  G4int PMTID;
 
   // *** Begin egg-shaped HyperK Geometry ***
 
