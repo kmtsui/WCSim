@@ -290,6 +290,9 @@ public:
                       midRadiusChange + (topRadiusChange-midRadiusChange)*std::min( zpos/(WCIDHeight/2.),1.);
   }
 
+  void SetPMTPositionInput(G4String choice) {pmtPositionFile = choice; readFromTable = true;}
+  G4String GetPMTPositionInput() {return pmtPositionFile;}
+
   void   SetPMTType(G4String type) {
     WCPMTType = type;
     //And update everything that is affected by a new PMT

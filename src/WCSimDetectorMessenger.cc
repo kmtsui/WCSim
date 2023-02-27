@@ -384,6 +384,11 @@ WCSimDetectorMessenger::WCSimDetectorMessenger(WCSimDetectorConstruction* WCSimD
   TankRadiusChange->SetDefaultValue(G4ThreeVector(0,0,0));
   TankRadiusChange->SetUnitCategory("Length");
   TankRadiusChange->SetDefaultUnit("mm");
+
+  // Set the input file to read PMT positions
+  SetPMTPositionInput = new G4UIcmdWithAString("/WCSim/PMT/PositionFile",this);
+  SetPMTPositionInput->SetGuidance("Set filename for PMT position file");
+  SetPMTPositionInput->SetParameterName("PMTPositionInput", true);
 }
 
 WCSimDetectorMessenger::~WCSimDetectorMessenger()
@@ -413,6 +418,7 @@ WCSimDetectorMessenger::~WCSimDetectorMessenger()
   delete UseReplica;
   delete PMTPosVar;
   delete TankRadiusChange;
+  delete SetPMTPositionInput;
 }
 
 void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
@@ -688,6 +694,10 @@ void WCSimDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 	  G4ThreeVector vec = TankRadiusChange->GetNew3VectorValue(newValue);
 	  G4cout << "Set top, mid, bot radius change = " << vec.x() << ", " << vec.y() << ", " << vec.z() << G4endl;
 	  WCSimDetector->SetRadiusChange(vec.x(),vec.y(),vec.z());
+	}
+
+	if(command == SetPMTPositionInput){
+	  WCSimDetector->SetPMTPositionInput(newValue);
 	}
 	
 	if(command == WCConstruct) {

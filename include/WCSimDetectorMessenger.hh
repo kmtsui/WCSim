@@ -79,10 +79,11 @@ class WCSimDetectorMessenger: public G4UImessenger
   G4UIcmdWithADoubleAndUnit* SetDetectorVerticalPosition;
   G4UIcmdWithADoubleAndUnit* SetDetectorDiameter;
 
+  //PMT placement commands
   G4UIcmdWithABool* UseReplica;
   G4UIcmdWithADoubleAndUnit* PMTPosVar;
   G4UIcmdWith3VectorAndUnit* TankRadiusChange;
-
+  G4UIcmdWithAString* SetPMTPositionInput;
 };
 
 #endif

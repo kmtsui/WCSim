@@ -1494,8 +1494,6 @@ return logicCapAssembly;
 G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
 {
   G4cout << "**** Building Cylindrical Detector without using replica ****" << G4endl;
-  readFromTable = true;
-  pmtPositionFile = "mPMT_pos.txt";
   ReadGeometryTableFromFile();
   PMTID = 0;
 
@@ -2186,8 +2184,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
             {
               G4double newPhi = atan2(pmtPos[PMTID].y(),pmtPos[PMTID].x())-phi_offset;
               PMTPosition.setY(newR*tan(newPhi));
+              G4cout<<"Annulus PMTID = "<<PMTID<<", Position = "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
             }
-            G4cout<<"Annulus PMTID = "<<PMTID<<" "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
             PMTID++;
 
             PMTPosition.rotateZ(phi_offset);  // align with the symmetry 
@@ -2252,6 +2250,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
             {
               G4double newPhi = atan2(pmtPos[PMTID].y(),pmtPos[PMTID].x())+(2*pi-totalAngle)/2.;
               PMTPosition.setY(newR*tan(newPhi));
+              G4cout<<"Annulus tower PMTID = "<<PMTID<<", Position = "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
             }
             PMTID++;
 
@@ -2882,8 +2881,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           {
             xoffset = pmtPos[PMTID].x() + G4RandGauss::shoot(0,pmtPosVar);
             yoffset = pmtPos[PMTID].y() + G4RandGauss::shoot(0,pmtPosVar);
+            G4cout<<"Cap PMTID = "<<PMTID<<", Position = "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
           }
-          G4cout<<"Cap PMTID = "<<PMTID<<" "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
           PMTID++;
           cellpos.setX(xoffset);
           cellpos.setY(yoffset);
@@ -2946,7 +2945,6 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
                 (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
 
           if (readFromTable) PMTPosition.setZ(pmtPos[PMTID].z() + (mainAnnulusHeight/2.+barrelCellHeight/2.)*zflip + G4RandGauss::shoot(0,pmtPosVar));
-          G4cout<<"Barrel ring PMTID = "<<PMTID<<" "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
 
           G4double newR = annulusBlackSheetRmin[1]+(annulusBlackSheetRmin[2]-annulusBlackSheetRmin[1])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);
           PMTPosition.setX(newR);
@@ -2955,6 +2953,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           {
             G4double newPhi = atan2(pmtPos[PMTID].y(),pmtPos[PMTID].x())-phi_offset;
             PMTPosition.setY(newR*tan(newPhi));
+            G4cout<<"Barrel ring PMTID = "<<PMTID<<", Position = "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
           }
           PMTID++;
 
@@ -3016,6 +3015,7 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           {
             G4double newPhi = atan2(pmtPos[PMTID].y(),pmtPos[PMTID].x())+(2*pi-totalAngle)/2.;
             PMTPosition.setY(newR*tan(newPhi));
+            G4cout<<"Barrel ring extra PMTID = "<<PMTID<<", Position = "<<pmtPos[PMTID].x()<<" "<<pmtPos[PMTID].y()<<" "<<pmtPos[PMTID].z()<<G4endl;
           }
           PMTID++;
 
