@@ -1068,6 +1068,9 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
                                  physiWCBarrelBorderCell,
                                  physiWCBarrelBorderCellBlackSheet,
                                  OpWaterBSSurface);
+  
+  new G4LogicalSkinSurface("BSBarrelBorderCellSkinSurface",logicWCBarrelBorderCellBlackSheet,
+							BSSkinSurface);
 
   if (Vis_Choice == "RayTracer"){
 
@@ -1172,6 +1175,9 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 				   physiWCExtraBorderCell,
 				   physiWCExtraBorderBlackSheet, 
 				   OpWaterBSSurface);
+
+    new G4LogicalSkinSurface("BSExtraBorderExtraSkinSurface",logicWCExtraBorderBlackSheetCell,
+							  BSSkinSurface);
 
     if (Vis_Choice == "RayTracer"){
    
