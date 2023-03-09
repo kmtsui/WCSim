@@ -296,7 +296,7 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
 
         aMaterialPropertiesTable = Material1->GetMaterialPropertiesTable();
         if (aMaterialPropertiesTable) {
-		    Rindex = aMaterialPropertiesTable->GetProperty(kRINDEX);
+		    Rindex = aMaterialPropertiesTable->GetProperty("RINDEX");
         }
         else {
                     theStatus = NoRINDEX;
@@ -370,7 +370,7 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
 
               if (theFinish == polishedbackpainted ||
                   theFinish == groundbackpainted ) {
-                  Rindex = aMaterialPropertiesTable->GetProperty(kRINDEX);
+                  Rindex = aMaterialPropertiesTable->GetProperty("RINDEX");
 	          if (Rindex) {
                      Rindex2 = Rindex->Value(thePhotonMomentum);
                   }
@@ -384,11 +384,11 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
               }
 
               PropertyPointer =
-                      aMaterialPropertiesTable->GetProperty(kREFLECTIVITY);
+                      aMaterialPropertiesTable->GetProperty("REFLECTIVITY");
               PropertyPointer1 =
-                      aMaterialPropertiesTable->GetProperty(kREALRINDEX);
+                      aMaterialPropertiesTable->GetProperty("REALRINDEX");
               PropertyPointer2 =
-                      aMaterialPropertiesTable->GetProperty(kIMAGINARYRINDEX);
+                      aMaterialPropertiesTable->GetProperty("IMAGINARYRINDEX");
 
               iTE = 1;
               iTM = 1;
@@ -405,14 +405,14 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
               }
 
               PropertyPointer =
-              aMaterialPropertiesTable->GetProperty(kEFFICIENCY);
+              aMaterialPropertiesTable->GetProperty("EFFICIENCY");
               if (PropertyPointer) {
                       theEfficiency =
                       PropertyPointer->Value(thePhotonMomentum);
               }
 
               PropertyPointer =
-              aMaterialPropertiesTable->GetProperty(kTRANSMITTANCE);
+              aMaterialPropertiesTable->GetProperty("TRANSMITTANCE");
               if (PropertyPointer) {
                       theTransmittance =
                       PropertyPointer->Value(thePhotonMomentum);
@@ -421,11 +421,11 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
               if (aMaterialPropertiesTable->
                                      ConstPropertyExists("SURFACEROUGHNESS"))
                  theSurfaceRoughness = aMaterialPropertiesTable->
-                                         GetConstProperty(kSURFACEROUGHNESS);
+                                         GetConstProperty("SURFACEROUGHNESS");
 
 	      if ( theModel == unified ) {
                  PropertyPointer =
-                 aMaterialPropertiesTable->GetProperty(kSPECULARLOBECONSTANT);
+                 aMaterialPropertiesTable->GetProperty("SPECULARLOBECONSTANT");
                  if (PropertyPointer) {
                          prob_sl =
                          PropertyPointer->Value(thePhotonMomentum);
@@ -434,7 +434,7 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
                  }
 
                  PropertyPointer =
-                 aMaterialPropertiesTable->GetProperty(kSPECULARSPIKECONSTANT);
+                 aMaterialPropertiesTable->GetProperty("SPECULARSPIKECONSTANT");
 	         if (PropertyPointer) {
                          prob_ss =
                          PropertyPointer->Value(thePhotonMomentum);
@@ -443,7 +443,7 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
                  }
 
                  PropertyPointer =
-                 aMaterialPropertiesTable->GetProperty(kBACKSCATTERCONSTANT);
+                 aMaterialPropertiesTable->GetProperty("BACKSCATTERCONSTANT");
                  if (PropertyPointer) {
                          prob_bs =
                          PropertyPointer->Value(thePhotonMomentum);
@@ -471,7 +471,7 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
               aMaterialPropertiesTable =
                      Material2->GetMaterialPropertiesTable();
               if (aMaterialPropertiesTable)
-                 Rindex = aMaterialPropertiesTable->GetProperty(kRINDEX);
+                 Rindex = aMaterialPropertiesTable->GetProperty("RINDEX");
               if (Rindex) {
                  Rindex2 = Rindex->Value(thePhotonMomentum);
               }
@@ -495,11 +495,13 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
           DielectricLUT();
 
         }
+#if G4VERSION_NUMBER > 1033
         else if (type == dielectric_LUTDAVIS) {
 
           DielectricLUTDAVIS();
 
         }
+#endif
         else if (type == dielectric_dichroic) {
 
           DielectricDichroic();
@@ -565,7 +567,7 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
 
         if ( theStatus == FresnelRefraction || theStatus == Transmission ) {
            G4MaterialPropertyVector* groupvel =
-           Material2->GetMaterialPropertiesTable()->GetProperty(kGROUPVEL);
+           Material2->GetMaterialPropertiesTable()->GetProperty("GROUPVEL");
            G4double finalVelocity = groupvel->Value(thePhotonMomentum);
            aParticleChange.ProposeVelocity(finalVelocity);
         }
@@ -670,9 +672,12 @@ WCSimOpBoundaryProcess::GetFacetNormal(const G4ThreeVector& Momentum,
 			            const G4ThreeVector&  Normal ) const
 {
         G4ThreeVector FacetNormal;
-
-        if (theModel == unified || theModel == LUT || theModel== DAVIS) {
-
+#if G4VERSION_NUMBER > 1033
+        if (theModel == unified || theModel == LUT || theModel== DAVIS) 
+#else
+        if (theModel == unified || theModel == LUT) 
+#endif
+        {
            /* This function code alpha to a random value taken from the
            distribution p(alpha) = g(alpha; 0, sigma_alpha)*std::sin(alpha),
            for alpha > 0 and alpha < 90, where g(alpha; 0, sigma_alpha)
@@ -907,7 +912,7 @@ void WCSimOpBoundaryProcess::DielectricLUT()
           // Loop checking, 13-Aug-2015, Peter Gumplinger
         } while (NewMomentum * theGlobalNormal <= 0.0);
 }
-
+#if G4VERSION_NUMBER > 1033
 void WCSimOpBoundaryProcess::DielectricLUTDAVIS()
 {
   G4int angindex, random, angleIncident;
@@ -1001,7 +1006,7 @@ void WCSimOpBoundaryProcess::DielectricLUTDAVIS()
      }
   } while (NewMomentum * theGlobalNormal <= 0.0);
 }
-
+#endif
 void WCSimOpBoundaryProcess::DielectricDichroic()
 {
         // Calculate Angle between Normal and Photon Momentum
@@ -1371,9 +1376,9 @@ G4double WCSimOpBoundaryProcess::GetReflectivity(G4double E1_perp,
   G4MaterialPropertiesTable* aMaterialPropertiesTable =
                                     Material1->GetMaterialPropertiesTable();
   G4MaterialPropertyVector* aPropertyPointerR =
-                      aMaterialPropertiesTable->GetProperty(kREALRINDEX);
+                      aMaterialPropertiesTable->GetProperty("REALRINDEX");
   G4MaterialPropertyVector* aPropertyPointerI =
-                      aMaterialPropertiesTable->GetProperty(kIMAGINARYRINDEX);
+                      aMaterialPropertiesTable->GetProperty("IMAGINARYRINDEX");
   if (aPropertyPointerR && aPropertyPointerI) {
      G4double RRindex = aPropertyPointerR->Value(thePhotonMomentum);
      G4double IRindex = aPropertyPointerI->Value(thePhotonMomentum);
@@ -1487,7 +1492,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
   G4MaterialPropertyVector* pp = nullptr;
 
   G4MaterialPropertiesTable* MPT = Material2->GetMaterialPropertiesTable();
-  if((pp = MPT->GetProperty(kRINDEX)))
+  if((pp = MPT->GetProperty("RINDEX")))
   {
     Rindex2 = pp->Value(thePhotonMomentum);
   }
@@ -1804,7 +1809,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
   G4MaterialPropertyVector* pp = nullptr;
 
   G4MaterialPropertiesTable* MPT = Material2->GetMaterialPropertiesTable();
-  if((pp = MPT->GetProperty(kRINDEX)))
+  if((pp = MPT->GetProperty("RINDEX")))
   {
     Rindex2 = pp->Value(thePhotonMomentum);
   }

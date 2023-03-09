@@ -54,6 +54,8 @@
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
 
+#include "G4Version.hh"
+
 // factory
 #include "G4PhysicsConstructorFactory.hh"
 G4_DECLARE_PHYSCONSTR_FACTORY(WCSimOpticalPhysics);
@@ -211,9 +213,13 @@ void WCSimOpticalPhysics::ConstructProcess()
   fScintillationProcess->SetScintillationExcitationRatio(fExcitationRatio);
   fScintillationProcess->SetFiniteRiseTime(fFiniteRiseTime);
   fScintillationProcess->SetScintillationByParticleType(fScintillationByParticleType);
+#if G4VERSION_NUMBER > 1023
   fScintillationProcess->SetScintillationTrackInfo(fScintillationTrackInfo);
+#endif
   fScintillationProcess->SetTrackSecondariesFirst(fProcessTrackSecondariesFirst[kScintillation]);
+#if G4VERSION_NUMBER > 1030
   fScintillationProcess->SetStackPhotons(fScintillationStackPhotons);
+#endif
   G4EmSaturation* emSaturation = G4LossTableManager::Instance()->EmSaturation();
   fScintillationProcess->AddSaturation(emSaturation);
   OpProcesses[kScintillation] = fScintillationProcess;
@@ -222,10 +228,16 @@ void WCSimOpticalPhysics::ConstructProcess()
   fCerenkovProcess->SetMaxNumPhotonsPerStep(fMaxNumPhotons);
   fCerenkovProcess->SetMaxBetaChangePerStep(fMaxBetaChange);
   fCerenkovProcess->SetTrackSecondariesFirst(fProcessTrackSecondariesFirst[kCerenkov]);
+#if G4VERSION_NUMBER > 1030
   fCerenkovProcess->SetStackPhotons(fCerenkovStackPhotons);
+#endif
   OpProcesses[kCerenkov] = fCerenkovProcess;
 
+#if G4VERSION_NUMBER > 1022
   auto myParticleIterator=GetParticleIterator();
+#else
+  auto myParticleIterator=aParticleIterator;
+#endif
   myParticleIterator->reset();
 
   while( (*myParticleIterator)() ){
@@ -303,7 +315,9 @@ void WCSimOpticalPhysics::SetCerenkovStackPhotons(G4bool val)
 {
   fCerenkovStackPhotons = val;
   if (fCerenkovProcess) {
+#if G4VERSION_NUMBER > 1030
     fCerenkovProcess->SetStackPhotons(fCerenkovStackPhotons);
+#endif
   }
 }
 
@@ -363,7 +377,9 @@ void WCSimOpticalPhysics::SetScintillationTrackInfo(G4bool val)
 {
   fScintillationTrackInfo = val;
   if (fScintillationProcess) {
+#if G4VERSION_NUMBER > 1023
     fScintillationProcess->SetScintillationTrackInfo(fScintillationTrackInfo);
+#endif
   }
 }
 
@@ -435,7 +451,9 @@ void WCSimOpticalPhysics::SetScintillationStackPhotons(G4bool stackingFlag)
 {
   fScintillationStackPhotons = stackingFlag;
   if (fScintillationProcess) {
+#if G4VERSION_NUMBER > 1030
     fScintillationProcess->SetStackPhotons(fScintillationStackPhotons);
+#endif
   }
 }
 
