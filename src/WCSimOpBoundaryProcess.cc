@@ -1659,7 +1659,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
       through = true;
 
       // Need to define non-zero efficiency to trigger absorption process
-      if (theEfficiency > 0.)
+      if (theEfficiency > 0. || true) // just force to do absorption for now
       {
         DoAbsorption();
         return;
