@@ -1086,11 +1086,17 @@ void WCSimDetectorConstruction::ConstructMaterials()
      { 0.0, 0.0 };
 
    // Coated surface properties for new photocathode physics
+   // Real refractive index of photocathode film
    G4double COATEDRINDEX_glasscath[NUM] =
      { 2.5, 2.5 };
+   // Imaginary refractive index of photocathode film
    G4double COATEDRINDEXIM_glasscath[NUM] =
      { 1.5, 1.5 };
+   // Thickness of photocathode film
    G4double COATEDTHICKNESS_glasscath = 20*nm;
+   // Allows frustrated transmission through photocathode film or not, only meaningful for Model 1
+   // However the photocathode film generally has a larger refractive than glass 
+   // so total internal reflection does not occur on the glass-film interface but on the glass-air interface 
    G4int COATEDFRUSTRATEDTRANSMISSION_glasscath = 1;
 
    // jl145 ----
@@ -1213,11 +1219,11 @@ void WCSimDetectorConstruction::ConstructMaterials()
    G4int pmtsurftype = WCSimTuningParams->GetPMTSurfType(); // Choose one of the two models, see WCSimOpBoundaryProcess for model details
    if (pmtsurftype==1)
    {
-      OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 11));
+      OpGlassCathodeSurface->SetType(G4SurfaceType(101));
    }
    else if (pmtsurftype==2)
    {
-      OpGlassCathodeSurface->SetType(G4SurfaceType(x_ray + 12));
+      OpGlassCathodeSurface->SetType(G4SurfaceType(102));
    }
    else if (pmtsurftype!=0)
    {

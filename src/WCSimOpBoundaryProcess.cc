@@ -538,11 +538,11 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
              }
           }
         }
-        else if (type == x_ray + 11) // brute-force index to get coated surface processes
+        else if (type == 101) // brute-force index to get coated surface processes
         {
             CoatedDielectricDielectric();
         }
-        else if (type == x_ray + 12)
+        else if (type == 102)
         {
             CoatedDielectricDielectric_alt();
         }
