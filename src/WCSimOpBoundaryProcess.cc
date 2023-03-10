@@ -1,12 +1,12 @@
 // Modified from G4OpBoundaryProcess.cc of geant4.10 to implement photocathode physics, which is a thin film of semiconductor alloy coated on glass
 // Model the reflection/transmission/absorption processes by the coated layer
 // 
-// CoatedDielectricDielectric() : 
+// CoatedDielectricDielectric_Model1() : 
 // Copy from geant4.11, which is based on https://ieeexplore.ieee.org/document/9875513
 // Model the alloy as a thin layer with real refractive index, then calculate reflection and transmission probability
 // Cannot handle total internal reflection when n1<n2
 // 
-// CoatedDielectricDielectric_alt() : 
+// CoatedDielectricDielectric_Model2() : 
 // Implementation based on https://arxiv.org/abs/physics/0408075v1
 // Model the alloy as a thin layer with real and imaginary refractive indices, then calculate absorption, reflection and transmission probability
 //
@@ -540,11 +540,11 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
         }
         else if (type == 101) // brute-force index to get coated surface processes
         {
-            CoatedDielectricDielectric();
+            CoatedDielectricDielectric_Model1();
         }
         else if (type == 102)
         {
-            CoatedDielectricDielectric_alt();
+            CoatedDielectricDielectric_Model2();
         }
         else {
 
@@ -1487,7 +1487,7 @@ G4bool WCSimOpBoundaryProcess::InvokeSD(const G4Step* pStep)
   else return false;
 }
 
-void WCSimOpBoundaryProcess::CoatedDielectricDielectric()
+void WCSimOpBoundaryProcess::CoatedDielectricDielectric_Model1()
 {
   G4MaterialPropertyVector* pp = nullptr;
 
@@ -1801,7 +1801,7 @@ G4double WCSimOpBoundaryProcess::GetReflectivityThroughThinLayer(G4double sinTL,
   return real(Reflectivity);
 }
 
-void WCSimOpBoundaryProcess::CoatedDielectricDielectric_alt()
+void WCSimOpBoundaryProcess::CoatedDielectricDielectric_Model2()
 {
   // Model taken from https://arxiv.org/abs/physics/0408075v1
   // Some bugs are found in the paper and corrected in this implementation

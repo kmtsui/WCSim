@@ -1,12 +1,12 @@
 // Modified from G4OpBoundaryProcess.hh of geant4.10 to implement photocathode physics, which is a thin film of semiconductor alloy coated on glass
 // Model the reflection/transmission/absorption processes by the coated layer
 // 
-// CoatedDielectricDielectric() : 
+// CoatedDielectricDielectric_Model1() : 
 // Copy from geant4.11, which is based on https://ieeexplore.ieee.org/document/9875513
 // Model the alloy as a thin layer with real refractive index, then calculate reflection and transmission probability
 // Cannot handle total internal reflection when n1<n2
 // 
-// CoatedDielectricDielectric_alt() : 
+// CoatedDielectricDielectric_Model2() : 
 // Implementation based on https://arxiv.org/abs/physics/0408075v1
 // Model the alloy as a thin layer with real and imaginary refractive indices, then calculate absorption, reflection and transmission probability
 //
@@ -225,11 +225,11 @@ private:
         void CalculateReflectivity(void);
 
         // Implementation of photocathode physics
-        void CoatedDielectricDielectric();
+        void CoatedDielectricDielectric_Model1();
         G4double GetReflectivityThroughThinLayer(G4double sinTL, G4double E1_perp,
                                            G4double E1_parl, G4double wavelength,
                                            G4double costh1, G4double costh2);
-        void CoatedDielectricDielectric_alt();
+        void CoatedDielectricDielectric_Model2();
 
         void BoundaryProcessVerbose(void) const;
 
@@ -284,7 +284,7 @@ private:
         size_t idx, idy;
         G4Physics2DVector* DichroicVector;
 
-        // Used by CoatedDielectricDielectric() and CoatedDielectricDielectric_alt()
+        // Used by CoatedDielectricDielectric_Model1() and CoatedDielectricDielectric_Model2()
         G4double fCoatedRindex, fCoatedRindexIm, fCoatedThickness;
         G4bool fCoatedFrustratedTransmission = true;
 
