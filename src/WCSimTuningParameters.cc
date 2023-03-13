@@ -16,6 +16,7 @@ WCSimTuningParameters::WCSimTuningParameters()
  mieff=0.0;
 
  pmtsurftype=0;
+ cathodepara=0;
 
  //jl145 - For Top Veto
  tvspacing = 100.0;

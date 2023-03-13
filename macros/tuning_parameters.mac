@@ -15,3 +15,6 @@
 # Paramater to set photocathode model
 # Set to "0" to use default model, "1" or "2" to use new models
 /WCSim/tuning/pmtsurftype 0
+# Choice of photocathode optical parameters.
+# 0 = (Seems to be) SK. 1 = KCsCb, 2 = RbCsCb from Model2's paper
+/WCSim/tuning/cathodepara 0

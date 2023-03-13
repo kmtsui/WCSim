@@ -35,6 +35,7 @@ private:
   G4UIcmdWithADouble* Mieff;
 
   G4UIcmdWithAnInteger* PMTSurfType;
+  G4UIcmdWithAnInteger* CathodePara;
 
   //For Top Veto - jl145
   G4UIcmdWithADouble* TVSpacing;
