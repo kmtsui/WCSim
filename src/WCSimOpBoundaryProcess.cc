@@ -1599,6 +1599,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_Model1()
     E2_parl = 2. * s1 * E1_parl / (Rindex2 * cost1 + Rindex1 * cost2);
     E2_total = E2_perp * E2_perp + E2_parl * E2_parl;
 
+    // Equations in Table 1 of https://ieeexplore.ieee.org/document/9875513
     transCoeff = 1. - GetReflectivityThroughThinLayer(
                         sintTL, E1_perp, E1_parl, wavelength, cost1, cost2);
     if (!G4BooleanRand(transCoeff))
@@ -1904,6 +1905,7 @@ void WCSimOpBoundaryProcess::CoatedDielectricDielectric_Model2()
       E1_parl = 1.0;
     }
 
+    // Calculate reflection and transmission probability from Eq. 2 of https://arxiv.org/abs/physics/0408075v1
     // Rename the variables to match those in paper
     costh2 = cost1;
     sinth3 = Rindex1*sint1/n3;

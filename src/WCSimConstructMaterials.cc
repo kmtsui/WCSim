@@ -1085,14 +1085,16 @@ void WCSimDetectorConstruction::ConstructMaterials()
    G4double EFFICIENCY_glasscath[NUM] =
      { 0.0, 0.0 };
 
-   // Coated surface properties for new photocathode physics
+   // Coated surface properties for new photocathode physics (see WCSimOpBoundaryProcess.cc)
    // Allows frustrated transmission through photocathode film or not, only meaningful for Model 1
    // However the photocathode film generally has a larger refractive than glass 
    // so total internal reflection does not occur on the glass-film interface but on the glass-air interface 
    G4int COATEDFRUSTRATEDTRANSMISSION_glasscath = 1;
+   // Below are the refractive indices of the photocathode film
 
    // Seems to be SK tuned values
    const G4int NUMSK = 6;
+   // Refractive indices are wavelength (energy) dependent
    G4double ENERGY_COATED_SK[NUMSK] = 
     {
       1.000*eV, 2.786*eV, 3.061*eV, 3.306*eV, 3.679*eV, 9.000*eV
@@ -1107,6 +1109,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
    G4double COATEDTHICKNESS_glasscath_SK = 11.5*nm;
 
    // Parameters taken from https://arxiv.org/abs/physics/0408075v1 (Model2)
+   // Tabulated values in Appendix A
    const G4int NUMWAV = 23;
    G4double ENERGY_COATED_WAV[NUMWAV] = 
     {
