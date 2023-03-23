@@ -2170,6 +2170,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
 
         for(G4double i = 0; i < WCPMTperCellHorizontal; i++){
           for(G4double j = 0; j < WCPMTperCellVertical; j++){
+            if (readFromTable && !pmtUse[PMTID]) // skip the placement if not in use
+            {
+              PMTID++;
+              continue;
+            }
             G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
                   -barrelCellWidth/2.+(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
                   -barrelCellHeight/2.+(j+0.5)*verticalSpacing + z_offset + G4RandGauss::shoot(0,pmtPosVar));
@@ -2237,6 +2242,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinderNoReplica()
 
         for(G4double i = 0; i < (WCBarrelNumPMTHorizontal-WCBarrelRingNPhi*WCPMTperCellHorizontal); i++){
           for(G4double j = 0; j < WCPMTperCellVertical; j++){
+            if (readFromTable && !pmtUse[PMTID]) // skip the placement if not in use
+            {
+              PMTID++;
+              continue;
+            }
             G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
                   towerWidth/2.-(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
                       -barrelCellHeight/2.+(j+0.5)*verticalSpacing+z_offset + G4RandGauss::shoot(0,pmtPosVar));
@@ -2876,7 +2886,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
         // for debugging boundary cases: 
         // &&  ((sqrt(xoffset*xoffset + yoffset*yoffset) + WCPMTRadius) > (WCCapEdgeLimit-100)) ) 
         {
-        
+          if (readFromTable && !pmtUse[PMTID]) // skip the placement if not in use
+          {
+            PMTID++;
+            continue;
+          }        
           if (readFromTable)
           {
             xoffset = pmtPos[PMTID].x() + G4RandGauss::shoot(0,pmtPosVar);
@@ -2943,7 +2957,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius,
                 -barrelCellWidth/2.+(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
                 (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
-
+          if (readFromTable && !pmtUse[PMTID]) // skip the placement if not in use
+          {
+            PMTID++;
+            continue;
+          }
           if (readFromTable) PMTPosition.setZ(pmtPos[PMTID].z() + (mainAnnulusHeight/2.+barrelCellHeight/2.)*zflip + G4RandGauss::shoot(0,pmtPosVar));
 
           G4double newR = annulusBlackSheetRmin[1]+(annulusBlackSheetRmin[2]-annulusBlackSheetRmin[1])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);
@@ -3005,7 +3023,11 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCapsNoReplica(G4int zflip)
           G4ThreeVector PMTPosition =  G4ThreeVector(WCIDRadius/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.),
                 towerWidth/2.-(i+0.5)*horizontalSpacing + G4RandGauss::shoot(0,pmtPosVar),
                     (-barrelCellHeight/2.+(j+0.5)*verticalSpacing)*zflip + G4RandGauss::shoot(0,pmtPosVar));
-
+          if (readFromTable && !pmtUse[PMTID]) // skip the placement if not in use
+          {
+            PMTID++;
+            continue;
+          }
           if (readFromTable) PMTPosition.setZ(pmtPos[PMTID].z() + (mainAnnulusHeight/2.+barrelCellHeight/2.)*zflip + G4RandGauss::shoot(0,pmtPosVar));
 
           G4double newR = towerBSRmin[1]+(towerBSRmin[2]-towerBSRmin[1])*(PMTPosition.z()-borderAnnulusZ[1])/(borderAnnulusZ[2]-borderAnnulusZ[1]);

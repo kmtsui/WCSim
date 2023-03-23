@@ -408,6 +408,7 @@ G4double WCSimDetectorConstruction::GetGeo_Dm(G4int i){
 void WCSimDetectorConstruction::ReadGeometryTableFromFile(){
   pmtPos.clear();
   pmtDir.clear();
+  pmtUse.clear();
   if (!readFromTable) return;
   std::ifstream Data(pmtPositionFile.c_str(),std::ios_base::in);
   if (!Data)
@@ -428,9 +429,9 @@ void WCSimDetectorConstruction::ReadGeometryTableFromFile(){
 	std::getline(Data, str);
 	std::istringstream stream(str);
 	while (std::getline(stream,tmp,' ')) Column++;
-	if (Column!=6)
+	if (Column!=7)
   {
-    G4cout<<"Number of column = "<<Column<<" which is not equal to 6. "<<G4endl;
+    G4cout<<"Number of column = "<<Column<<" which is not equal to 7. "<<G4endl;
     G4cout<<"Inappropriate input --> Revert to default positioning"<<G4endl;
     readFromTable = false;
     return;
@@ -438,11 +439,13 @@ void WCSimDetectorConstruction::ReadGeometryTableFromFile(){
   Data.seekg(SavePoint);
 
   G4ThreeVector pos, dir;
+  int UsePMT;
   while (!Data.eof())
   {
-    Data>>pos[0]>>pos[1]>>pos[2]>>dir[0]>>dir[1]>>dir[2];
+    Data>>pos[0]>>pos[1]>>pos[2]>>dir[0]>>dir[1]>>dir[2]>>UsePMT;
     pmtPos.push_back(pos);
     pmtDir.push_back(dir);
+    pmtUse.push_back(UsePMT);
   }
   Data.close();
 }

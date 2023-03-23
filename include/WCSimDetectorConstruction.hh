@@ -566,6 +566,7 @@ private:
   G4double pmtPosVar;
   G4double topRadiusChange, midRadiusChange, botRadiusChange;
   std::vector<G4ThreeVector> pmtPos, pmtDir;
+  std::vector<G4bool> pmtUse;
   std::string pmtPositionFile;
   void ReadGeometryTableFromFile();
   G4int PMTID;
