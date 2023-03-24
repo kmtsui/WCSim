@@ -37,6 +37,8 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,WCSimTuning
   isUpright = false;
   isEggShapedHyperK  = false;
   isNuPrism  = false;
+  isNuPrismBeamTest = false;
+  isNuPrismBeamTest_16cShort = false;
 
   useReplica = true;
   pmtPosVar = 0;
