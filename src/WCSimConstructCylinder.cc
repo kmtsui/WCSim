@@ -932,6 +932,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   G4double borderAnnulusZ[3] = {(-barrelCellHeight/2.-(WCIDRadius-innerAnnulusRadius))*zflip, 
 								-barrelCellHeight/2.*zflip,
 								barrelCellHeight/2.*zflip};
+  // to check edge case
+  if (WCBarrelPMTOffset < (WCIDRadius-innerAnnulusRadius)) borderAnnulusZ[0] = (-barrelCellHeight/2.-WCBarrelPMTOffset)*zflip;
   G4double borderAnnulusRmin[3] = { WCIDRadius, innerAnnulusRadius, innerAnnulusRadius};
   G4double borderAnnulusRmax[3] = {outerAnnulusRadius, outerAnnulusRadius,outerAnnulusRadius};
   G4Polyhedra* solidWCBarrelBorderRing = new G4Polyhedra("WCBarrelBorderRing",
@@ -1035,12 +1037,27 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   // barrel cells.
   // ---------------------------------------------------------
 
+  G4double borderBlackSheetRmin[3] = { WCIDRadius, WCIDRadius, WCIDRadius};
+  G4double borderBlackSheetRmax[3] = {WCIDRadius+WCBlackSheetThickness, WCIDRadius+WCBlackSheetThickness,WCIDRadius+WCBlackSheetThickness};
+  G4Polyhedra* solidWCBarrelBorderCellBlackSheet = new G4Polyhedra("WCBarrelBorderCellBlackSheet",
+                                                   -dPhi/2., // phi start
+                                                   dPhi, //total angle 
+                                                   1, //NPhi-gon
+                                                   3,
+                                                   borderAnnulusZ,
+                                                   borderBlackSheetRmin,
+                                                   borderBlackSheetRmax);
+  G4LogicalVolume* logicWCBarrelBorderCellBlackSheet =
+    new G4LogicalVolume(solidWCBarrelBorderCellBlackSheet,
+                        G4Material::GetMaterial("Blacksheet"),
+                        "WCBarrelBorderCellBlackSheet",
+                        0,0,0);
 
-   G4VPhysicalVolume* physiWCBarrelBorderCellBlackSheet =
+  G4VPhysicalVolume* physiWCBarrelBorderCellBlackSheet =
     new G4PVPlacement(0,
                       G4ThreeVector(0.,0.,0.),
-                      logicWCBarrelCellBlackSheet,
-                      "WCBarrelCellBlackSheet",
+                      logicWCBarrelBorderCellBlackSheet,
+                      "WCBarrelBorderCellBlackSheet",
                       logicWCBarrelBorderCell,
                       false,
                       0,
@@ -1051,6 +1068,28 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
                                  physiWCBarrelBorderCell,
                                  physiWCBarrelBorderCellBlackSheet,
                                  OpWaterBSSurface);
+  
+  new G4LogicalSkinSurface("BSBarrelBorderCellSkinSurface",logicWCBarrelBorderCellBlackSheet,
+							BSSkinSurface);
+
+  if (Vis_Choice == "RayTracer"){
+
+    G4VisAttributes* WCBarrelBlackSheetCellVisAtt 
+        = new G4VisAttributes(G4Colour(0.2,0.9,0.2)); // green color
+    WCBarrelBlackSheetCellVisAtt->SetForceSolid(true); // force the object to be visualized with a surface
+    WCBarrelBlackSheetCellVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown
+    if(!debugMode)
+      logicWCBarrelBorderCellBlackSheet->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);
+    else
+    logicWCBarrelBorderCellBlackSheet->SetVisAttributes(G4VisAttributes::Invisible);}
+  else {
+
+    G4VisAttributes* WCBarrelBlackSheetCellVisAtt 
+      = new G4VisAttributes(G4Colour(0.2,0.9,0.2));
+    if(!debugMode)
+      logicWCBarrelBorderCellBlackSheet->SetVisAttributes(G4VisAttributes::Invisible);
+    else
+      logicWCBarrelBorderCellBlackSheet->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);}
 
   // we have to declare the logical Volumes 
   // outside of the if block to access it later on 
@@ -1100,12 +1139,32 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 	logicWCExtraBorderCell->SetVisAttributes(G4VisAttributes::Invisible);
 	//TF vis.
 
+    G4double extraBorderBlackSheetRmin[3];
+    G4double extraBorderBlackSheetRmax[3];
+    for(int i = 0; i < 3; i++){
+      extraBorderBlackSheetRmin[i] = (WCIDRadius)/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.);
+      extraBorderBlackSheetRmax[i] = (WCIDRadius+WCBlackSheetThickness)/cos(dPhi/2.)*cos((2.*pi-totalAngle)/2.);
+    } 
+    G4Polyhedra* solidWCExtraBorderBlackSheetCell = new G4Polyhedra("WCspecialBarrelBorderBlackSheetCell",
+			   totalAngle-2.*pi,//+dPhi/2., // phi start
+			   2.*pi -  totalAngle -G4GeometryTolerance::GetInstance()->GetSurfaceTolerance()/(10.*m), //total phi
+			   1, //NPhi-gon
+			   3,
+			   borderAnnulusZ,
+			   extraBorderBlackSheetRmin,
+			   extraBorderBlackSheetRmax);
+
+    G4LogicalVolume* logicWCExtraBorderBlackSheetCell =
+      new G4LogicalVolume(solidWCExtraBorderBlackSheetCell, 
+			  G4Material::GetMaterial("Blacksheet"),
+			  "WCspecialBarrelBorderBlackSheetCell", 
+			  0,0,0);
 
     G4VPhysicalVolume* physiWCExtraBorderBlackSheet =
       new G4PVPlacement(0,
 			G4ThreeVector(0.,0.,0.),
-			logicWCTowerBlackSheet,
-			"WCExtraTowerBlackSheet",
+			logicWCExtraBorderBlackSheetCell,
+			"WCExtraBorderBlackSheet",
 			logicWCExtraBorderCell,
 			false,
 			0,
@@ -1117,6 +1176,31 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 				   physiWCExtraBorderBlackSheet, 
 				   OpWaterBSSurface);
 
+    new G4LogicalSkinSurface("BSExtraBorderExtraSkinSurface",logicWCExtraBorderBlackSheetCell,
+							  BSSkinSurface);
+
+    if (Vis_Choice == "RayTracer"){
+   
+      G4VisAttributes* WCBarrelBlackSheetCellVisAtt 
+        = new G4VisAttributes(G4Colour(0.2,0.9,0.2)); // green color
+      WCBarrelBlackSheetCellVisAtt->SetForceSolid(true); // force the object to be visualized with a surface
+      WCBarrelBlackSheetCellVisAtt->SetForceAuxEdgeVisible(true); // force auxiliary edges to be shown
+
+      if(!debugMode)
+        logicWCExtraBorderBlackSheetCell->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);
+      else
+        logicWCExtraBorderBlackSheetCell->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);}
+
+    else {
+
+      G4VisAttributes* WCBarrelBlackSheetCellVisAtt 
+          = new G4VisAttributes(G4Colour(0.2,0.9,0.2)); // green color
+
+      if(!debugMode)
+        {logicWCExtraBorderBlackSheetCell->SetVisAttributes(G4VisAttributes::Invisible);}
+      else
+        {logicWCExtraBorderBlackSheetCell->SetVisAttributes(WCBarrelBlackSheetCellVisAtt);}}
+
   }
  //------------------------------------------------------------
  // add caps
@@ -1126,7 +1210,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
 					   (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius))*zflip,
 					   (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius))*zflip,
 					   WCBarrelPMTOffset*zflip} ;
-
+  // to check edge case
+  if (WCBarrelPMTOffset < (WCIDRadius-innerAnnulusRadius)) { capZ[1] = 0; capZ[2] = 0; }
   G4double capRmin[4] = {  0. , 0., 0., 0.} ;
   G4double capRmax[4] = {outerAnnulusRadius, outerAnnulusRadius,  WCIDRadius, innerAnnulusRadius};
   G4VSolid* solidWCCap;
@@ -1230,6 +1315,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCaps(G4int zflip)
   // -------------------------------------------------------------------
   
  G4double capBlackSheetZ[4] = {-WCBlackSheetThickness*zflip, 0., 0., (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius)) *zflip};
+ // to ensure squential z
+ if (WCBarrelPMTOffset - (WCIDRadius-innerAnnulusRadius)<0) capBlackSheetZ[3] = 0;
   G4double capBlackSheetRmin[4] = {0., 0., WCIDRadius, WCIDRadius};
   G4double capBlackSheetRmax[4] = {WCIDRadius+WCBlackSheetThickness, 
                                    WCIDRadius+WCBlackSheetThickness,

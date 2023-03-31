@@ -288,7 +288,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructMultiPMT(G4String PMTName, 
   // origin is center of upward cylinder
   G4LogicalVolume *logic_mPMT_container;
   //necessary to make concentric shells because can Mother can only contain parametrized daughters.
-  G4double innerR_curv_container = vessel_radius_curv - mPMT_outer_material_d - 54.*mm;  //-expose - dist_pmt_vessel
+  //G4double innerR_curv_container = vessel_radius_curv - mPMT_outer_material_d - 54.*mm;  //-expose - dist_pmt_vessel
+  G4double innerR_curv_container = vessel_radius_curv - mPMT_outer_material_d - pmtModuleHeight;  //updated number with support structure
   G4double outerR_curv_container = vessel_radius_curv - mPMT_outer_material_d;
 
   //vessel_curv - vessel_height is conserved for all concentric caps !
@@ -402,7 +403,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructMultiPMT(G4String PMTName, 
 
   // individual PMTs z=0 is offset by position_z_offset (see ConstructPMT) for n>1
   G4double pmtDistance = innerR_curv_container; // Inner radius od the DOM 
-  pmtDistance -= (vessel_radius_curv - mPMT_outer_material_d - 54.*mm); 
+  // pmtDistance -= (vessel_radius_curv - mPMT_outer_material_d - 54.*mm); 
+  pmtDistance -= (vessel_radius_curv - mPMT_outer_material_d - pmtModuleHeight); //updated number with support structure
   G4cout << "Distance from the Z axis and corrected for z0 of individual PMTs = " <<  pmtDistance << " mm" << G4endl;
   
   G4LogicalVolume* logicWCPMT = ConstructPMT(PMTName, CollectionName);
