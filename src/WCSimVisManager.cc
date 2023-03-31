@@ -62,6 +62,8 @@
 #include "G4VRML2.hh"
 #endif
 
+#include "G4Version.hh"
+
 WCSimVisManager::WCSimVisManager () {}
 
 void WCSimVisManager::RegisterGraphicsSystems () {
@@ -141,7 +143,11 @@ void WCSimVisManager::RegisterGraphicsSystems () {
     G4cout <<
       "\nYou have successfully chosen to use the following graphics systems."
 	 << G4endl;
-    PrintAvailableGraphicsSystems ();
+#if G4VERSION_NUMBER < 1020
+    PrintAvailableGraphicsSystems (); //use this version for Geant4.10.1
+#else
+    PrintAvailableGraphicsSystems (GetVerbosityValue(fVerbose)); //use this version for Geant4.10.2+
+#endif
   }
   RegisterModel(mymodel);
 
