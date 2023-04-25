@@ -86,16 +86,19 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4int primParentID = -1;
   G4float photonStartTime;
   G4ThreeVector photonStartPos;
+  G4float photonAbsCos;
   if (trackinfo) {
     //Skip secondaries and match to mother process, eg. muon, decay particle, gamma from pi0/nCapture.
     primParentID = trackinfo->GetPrimaryParentID();  //!= ParentID.
     photonStartTime = trackinfo->GetPhotonStartTime();
     photonStartPos = trackinfo->GetPhotonStartPos();
+    photonAbsCos = trackinfo->GetPhotonAbsCos();
   }
   else { // if there is no trackinfo, then it is a primary particle!
     primParentID = aStep->GetTrack()->GetTrackID();
     photonStartTime = aStep->GetTrack()->GetGlobalTime();
     photonStartPos = aStep->GetTrack()->GetVertexPosition();
+    photonAbsCos = -99.;
   }
 
 
@@ -231,6 +234,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	   (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonStartTime(photonStartTime);
 	   (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonStartPos(photonStartPos);
 	   (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonEndPos(worldPosition);
+     (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonAbsCos(photonAbsCos);
 	   
 	   //     if ( particleDefinition != G4OpticalPhoton::OpticalPhotonDefinition() )
 	   //       newHit->Print();
@@ -242,6 +246,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 	 (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonStartTime(photonStartTime);
 	 (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonStartPos(photonStartPos);
 	 (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonEndPos(worldPosition);
+   (*hitsCollection)[PMTHitMap[replicaNumber]-1]->AddPhotonAbsCos(photonAbsCos);
 	 
        }
      }

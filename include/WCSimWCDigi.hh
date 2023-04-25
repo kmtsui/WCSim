@@ -72,6 +72,7 @@ private:
   std::map<int, G4float>    photonStartTime; ///< Primary parent ID of the Hit (do not use for Digits)
   std::map<int, G4ThreeVector>    photonStartPos; ///< Start point of the photon of the Hit (do not use for Digits)
   std::map<int, G4ThreeVector>    photonEndPos; ///< End point of the photon of the Hit (do not use for Digits)
+  std::map<int, G4float>    photonAbsCos; ///< Surface normal cosine incident angle of the photon of the Hit (do not use for Digits)
   
 
   //integrated hit/digit parameters
@@ -95,6 +96,7 @@ public:
   inline void SetPhotonStartTime(G4int gate, G4float time) { photonStartTime[gate] = time; };
   inline void SetPhotonStartPos(G4int gate, const G4ThreeVector &position) { photonStartPos[gate] = position; };
   inline void SetPhotonEndPos(G4int gate, const G4ThreeVector &position) { photonEndPos[gate] = position; };
+  inline void SetPhotonAbsCos(G4int gate, G4float costh) { photonAbsCos[gate] = costh; };
 
   // Add a digit number and unique photon number to fDigiComp
   inline void AddPhotonToDigiComposition(int digi_number, int photon_number){
@@ -112,6 +114,7 @@ public:
   inline G4float        GetPhotonStartTime(int gate)    { return photonStartTime[gate];};
   inline G4ThreeVector  GetPhotonStartPos(int gate)    { return photonStartPos[gate];};
   inline G4ThreeVector  GetPhotonEndPos(int gate)    { return photonEndPos[gate];};
+  inline G4float        GetPhotonAbsCos(int gate)    { return photonAbsCos[gate];};
   inline G4int          GetTrackID()    { return trackID;};
   inline G4float GetGateTime(int gate) { return TriggerTimes[gate];}
   inline G4int   GetTubeID() {return tubeID;};
@@ -159,6 +162,7 @@ public:
     int index_primaryparentid;
     float index_photonstarttime;
     G4ThreeVector index_photonstartpos;
+    float index_photonabscos;
     for (i = 1; i < (int) time.size(); ++i)
       {
         index_time  = time[i];
@@ -168,6 +172,7 @@ public:
 	index_primaryparentid = primaryParentID[i];
 	index_photonstarttime = photonStartTime[i];
 	index_photonstartpos = photonStartPos[i];
+  index_photonabscos = photonAbsCos[i];
         for (j = i; j > 0 && time[j-1] > index_time; j--) {
           time[j] = time[j-1];
           pe[j] = pe[j-1];
@@ -175,6 +180,7 @@ public:
 	  primaryParentID[j] = primaryParentID[j-1];
 	  photonStartTime[j] = photonStartTime[j-1];
 	  photonStartPos[j] = photonStartPos[j-1];
+    photonAbsCos[j] = photonAbsCos[j-1];
           //G4cout <<"swapping "<<time[j-1]<<" "<<index_time<<G4endl;
         }
         
@@ -185,6 +191,7 @@ public:
 	primaryParentID[j] = index_primaryparentid;
 	photonStartTime[j] = index_photonstarttime;
 	photonStartPos[j] = index_photonstartpos;
+  photonAbsCos[j] = index_photonabscos;
       }    
   }
   

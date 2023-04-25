@@ -63,18 +63,33 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
   else 
     fpTrackingManager->SetStoreTrajectory(false);
 	
-    WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
-    if(!primaryGenerator->IsConversionFound()) {
-      if(aTrack->GetParentID()==0){
-          primaryID = aTrack->GetTrackID();
-      }
-      else if(aTrack->GetParentID() == primaryID) {
-          if (aTrack->GetCreatorProcess()->GetProcessName() == "conv") {
-              primaryGenerator->FoundConversion();
-          }
-          G4EventManager::GetEventManager()->AbortCurrentEvent();
-          G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetEventAborted();
-      }
+  WCSimPrimaryGeneratorAction *primaryGenerator = (WCSimPrimaryGeneratorAction *) (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+  if(!primaryGenerator->IsConversionFound()) {
+    if(aTrack->GetParentID()==0){
+        primaryID = aTrack->GetTrackID();
+    }
+    else if(aTrack->GetParentID() == primaryID) {
+        if (aTrack->GetCreatorProcess()->GetProcessName() == "conv") {
+            primaryGenerator->FoundConversion();
+        }
+        G4EventManager::GetEventManager()->AbortCurrentEvent();
+        G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetEventAborted();
+    }
+  }
+
+  // Attach WCSimTrackInformation to photon track if not existed (primary track)
+  if (aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
+  {
+    if (!aTrack->GetUserInformation())
+    {
+      WCSimTrackInformation* anInfo = new WCSimTrackInformation();
+      anInfo->SetPrimaryParentID(aTrack->GetTrackID());
+      anInfo->SetPhotonStartTime(aTrack->GetGlobalTime());
+		  anInfo->SetPhotonStartPos(aTrack->GetPosition());
+
+      G4Track* theTrack = (G4Track*)aTrack;
+      theTrack->SetUserInformation(anInfo);
+    }
   }
 }
 

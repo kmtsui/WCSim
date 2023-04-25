@@ -97,6 +97,8 @@
 
 #include "G4SystemOfUnits.hh"
 
+#include "WCSimTrackInformation.hh"
+
 /////////////////////////
 // Class Implementation
 /////////////////////////
@@ -551,6 +553,15 @@ WCSimOpBoundaryProcess::PostStepDoIt(const G4Track& aTrack, const G4Step& aStep)
           G4cerr << " Error: G4BoundaryProcess: illegal boundary type " << G4endl;
           return G4VDiscreteProcess::PostStepDoIt(aTrack, aStep);
 
+        }
+
+        if ( theStatus == Absorption )
+        {
+         if (aTrack.GetUserInformation())
+         {
+             WCSimTrackInformation* trackinfo = (WCSimTrackInformation*)aTrack.GetUserInformation();
+             trackinfo->SetPhotonAbsCos(cost1);
+         }
         }
 
         NewMomentum = NewMomentum.unit();

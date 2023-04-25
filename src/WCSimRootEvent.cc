@@ -411,7 +411,8 @@ WCSimRootTrack::WCSimRootTrack(Int_t ipnu,
 //_____________________________________________________________________________
 
 WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID, Int_t mPMTID, Int_t mPMT_PMTID, std::vector<Float_t> truetime,
-        std::vector<Int_t> primParID, std::vector<Float_t> photonStartTime, std::vector<TVector3> photonStartPos, std::vector<TVector3> photonEndPos)
+        std::vector<Int_t> primParID, std::vector<Float_t> photonStartTime, std::vector<TVector3> photonStartPos, std::vector<TVector3> photonEndPos,
+        std::vector<Float_t> photonAbsCos)
 {
   // Add a new Cherenkov hit to the list of Cherenkov hits
   TClonesArray &cherenkovhittimes = *fCherenkovHitTimes;
@@ -426,7 +427,7 @@ WCSimRootCherenkovHit *WCSimRootTrigger::AddCherenkovHit(Int_t tubeID, Int_t mPM
       endPos[j] = photonEndPos[i][j];
     }
     WCSimRootCherenkovHitTime *cherenkovhittime = 
-      new(cherenkovhittimes[fNcherenkovhittimes++]) WCSimRootCherenkovHitTime(truetime[i],primParID[i], photonStartTime[i], startPos, endPos);
+      new(cherenkovhittimes[fNcherenkovhittimes++]) WCSimRootCherenkovHitTime(truetime[i],primParID[i], photonStartTime[i], startPos, endPos, photonAbsCos[i]);
   }
 
   Int_t WC_Index[2];
@@ -472,7 +473,8 @@ WCSimRootCherenkovHit::WCSimRootCherenkovHit(Int_t tubeID,
 }
 
 WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Float_t truetime, Int_t primParID,
-						     Float_t photonStartTime, Float_t photonStartPos[3], Float_t photonEndPos[3])
+						     Float_t photonStartTime, Float_t photonStartPos[3], Float_t photonEndPos[3],
+                 Float_t photonAbsCos)
 {
   // Create a WCSimRootCherenkovHit object and fill it with stuff
     fTruetime        = truetime; 
@@ -482,6 +484,7 @@ WCSimRootCherenkovHitTime::WCSimRootCherenkovHitTime(Float_t truetime, Int_t pri
         fPhotonStartPos[i] = photonStartPos[i];
         fPhotonEndPos[i] = photonEndPos[i];
     }
+    fPhotonAbsCos = photonAbsCos;
 }
 
 //_____________________________________________________________________________

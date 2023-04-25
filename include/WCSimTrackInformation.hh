@@ -19,14 +19,16 @@ private:
   G4int  primaryParentID;
   G4float  photonStartTime;
   G4ThreeVector  photonStartPos;
+  G4float photonAbsCos;
 
 public:
-  WCSimTrackInformation() : saveit(false), primaryParentID(-99) {}  //TF: initialize to value with NO meaning instead of DN
+  WCSimTrackInformation() : saveit(false), primaryParentID(-99), photonAbsCos(-99.) {}  //TF: initialize to value with NO meaning instead of DN
   WCSimTrackInformation(const WCSimTrackInformation* aninfo) {
       saveit = aninfo->saveit;
       primaryParentID = aninfo->primaryParentID;
       photonStartTime = aninfo->photonStartTime;
       photonStartPos = aninfo->photonStartPos;
+      photonAbsCos = -99.;
   }
   virtual ~WCSimTrackInformation() {}
   WCSimTrackInformation(const G4Track* );
@@ -37,9 +39,11 @@ public:
   void SetPrimaryParentID(G4int i) { primaryParentID = i;}
   void SetPhotonStartTime(G4float time) { photonStartTime = time;}
   void SetPhotonStartPos(const G4ThreeVector &pos) { photonStartPos = pos;}
+  void SetPhotonAbsCos(G4float costh) { photonAbsCos = costh; }
   G4int GetPrimaryParentID() {return primaryParentID;}
   G4float GetPhotonStartTime() {return photonStartTime;}
   G4ThreeVector GetPhotonStartPos() {return photonStartPos;}
+  G4float GetPhotonAbsCos() {return photonAbsCos;}
 
   inline void *operator new(size_t);
   inline void operator delete(void *aTrackInfo);

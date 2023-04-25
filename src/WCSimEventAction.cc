@@ -247,6 +247,7 @@ void WCSimEventAction::EndOfEventAction(const G4Event* evt)
 	(*WCHC)[hitIndex]->AddPhotonStartPos(pos);
 	(*WCHC)[hitIndex]->AddPhotonEndPos(pos);
 	(*WCHC)[hitIndex]->AddPhotonStartTime(time);
+  (*WCHC)[hitIndex]->AddPhotonAbsCos(-99.);
       }
     }
   }
@@ -883,11 +884,13 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
     std::vector<float> photonStartTime;
     std::vector<TVector3> photonStartPos;
     std::vector<TVector3> photonEndPos;
+    std::vector<float> photonAbsCos;
     double hit_time_smear, hit_time_true;
     int hit_parentid;
     float hit_photon_starttime;
     TVector3 hit_photon_startpos;
     TVector3 hit_photon_endpos;
+    float hit_photon_abscos;
     //loop over the DigitsCollection
     for(int idigi = 0; idigi < WCDC_hits->entries(); idigi++) {
       int digi_tubeid = (*WCDC_hits)[idigi]->GetTubeID();
@@ -905,11 +908,13 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
 	        (*WCDC_hits)[idigi]->GetPhotonEndPos(id)[0],
 	        (*WCDC_hits)[idigi]->GetPhotonEndPos(id)[1],
 	        (*WCDC_hits)[idigi]->GetPhotonEndPos(id)[2]);
-	truetime.push_back(hit_time_true);
+	hit_photon_abscos = (*WCDC_hits)[idigi]->GetPhotonAbsCos(id);
+  truetime.push_back(hit_time_true);
 	primaryParentID.push_back(hit_parentid);
 	photonStartTime.push_back(hit_photon_starttime);
 	photonStartPos.push_back(hit_photon_startpos);
 	photonEndPos.push_back(hit_photon_endpos);
+  photonAbsCos.push_back(hit_photon_abscos);
 #ifdef _SAVE_RAW_HITS_VERBOSE
 	hit_time_smear = (*WCDC_hits)[idigi]->GetTime(id);
 	smeartime.push_back(hit_time_smear);
@@ -935,13 +940,15 @@ void WCSimEventAction::FillRootEvent(G4int event_id,
 				      primaryParentID,
 				      photonStartTime,
 				      photonStartPos,
-				      photonEndPos);
+				      photonEndPos,
+              photonAbsCos);
       smeartime.clear();
       truetime.clear();
       primaryParentID.clear();
       photonStartTime.clear();
       photonStartPos.clear();
       photonEndPos.clear();
+      photonAbsCos.clear();
     }//idigi
   }//if(WCDC_hits)
 #endif //_SAVE_RAW_HITS

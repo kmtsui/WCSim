@@ -66,6 +66,7 @@ class WCSimWCHit : public G4VHit
   void AddPhotonStartTime (G4float photStartTime) { photonStartTime.push_back(photStartTime); }
   void AddPhotonStartPos  (const G4ThreeVector &photStartPos) { photonStartPos.push_back(photStartPos); }
   void AddPhotonEndPos  (const G4ThreeVector &photEndPos) { photonEndPos.push_back(photEndPos); }
+  void AddPhotonAbsCos (G4float photAbsCos) { photonAbsCos.push_back(photAbsCos); }
 
   // This is temporarily used for the drawing scale
   void SetMaxPe(G4int number = 0)  {maxPe   = number;};
@@ -91,6 +92,7 @@ class WCSimWCHit : public G4VHit
   G4float       GetPhotonStartTime(int i) { return photonStartTime[i];};
   G4ThreeVector GetPhotonStartPos(int i) { return photonStartPos[i];};
   G4ThreeVector GetPhotonEndPos(int i) { return photonEndPos[i];};
+  G4float       GetPhotonAbsCos(int i) { return photonAbsCos[i];};
   
   G4LogicalVolume* GetLogicalVolume() {return pLogV;};
 
@@ -170,6 +172,7 @@ class WCSimWCHit : public G4VHit
   std::vector<G4float>  photonStartTime;
   std::vector<G4ThreeVector> photonStartPos;
   std::vector<G4ThreeVector> photonEndPos;
+  std::vector<G4float>  photonAbsCos;
   G4int                 totalPeInGate;
 };
 
