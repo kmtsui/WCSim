@@ -384,7 +384,8 @@ void WCSimDetectorConstruction::ConstructMaterials()
     G4double ABWFF = 1.0;
 
     // Get from the tuning parameters
-    ABWFF = WCSimTuningParams->GetAbwff();
+    //ABWFF = WCSimTuningParams->GetAbwff();
+    ABWFF = 1.e9;
 
     //T. Akiri: Values from Skdetsim 
     G4double ABSORPTION_water[NUMENTRIES_water] =
@@ -468,7 +469,8 @@ void WCSimDetectorConstruction::ConstructMaterials()
    G4double RAYFF = 0.625;
 
    // Get from the tuning parameters
-   RAYFF = WCSimTuningParams->GetRayff();
+   //RAYFF = WCSimTuningParams->GetRayff();
+   RAYFF = 1.e9;
    //    printf("RAYFF: %f\n",RAYFF);
 
    //T. Akiri: Values from Skdetsim 
@@ -513,6 +515,7 @@ void WCSimDetectorConstruction::ConstructMaterials()
 
    // Get from the tuning parameters
    G4double MIEFF = WCSimTuningParams->GetMieff();
+   MIEFF = 0;
    //G4double MIEFF = 0.0;
    //    printf("MIEFF: %f\n",MIEFF);
 
@@ -1093,20 +1096,20 @@ void WCSimDetectorConstruction::ConstructMaterials()
    // Below are the refractive indices of the photocathode film
 
    // Seems to be SK tuned values
-   const G4int NUMSK = 6;
+   const G4int NUMSK = 2;
    // Refractive indices are wavelength (energy) dependent
    G4double ENERGY_COATED_SK[NUMSK] = 
     {
-      1.000*eV, 2.786*eV, 3.061*eV, 3.306*eV, 3.679*eV, 9.000*eV
+      1.000*eV, 9.000*eV
     };
    // Real refractive index of photocathode film
    G4double COATEDRINDEX_glasscath_SK[NUMSK] =
-     { 3.4, 3.4, 3.1, 2.8, 2.4, 2.4 };
+     { WCSimTuningParams->GetAbwff(), WCSimTuningParams->GetAbwff() };
    // Imaginary refractive index of photocathode film
    G4double COATEDRINDEXIM_glasscath_SK[NUMSK] =
-     { 1.7, 1.7, 1.6, 1.5, 1.4, 1.4 };
+     { WCSimTuningParams->GetRayff(), WCSimTuningParams->GetRayff() };
    // Thickness of photocathode film
-   G4double COATEDTHICKNESS_glasscath_SK = 11.5*nm;
+   G4double COATEDTHICKNESS_glasscath_SK = WCSimTuningParams->GetMieff()*nm;
 
    // Parameters taken from https://arxiv.org/abs/physics/0408075v1 (Model2)
    // Tabulated values in Appendix A
