@@ -24,6 +24,10 @@ WCSimTrackingAction::WCSimTrackingAction()
   ProcessList.insert("nCapture");
 
 //   ProcessList.insert("conv");
+
+  // F. Nova One can check here if the photon comes from WLS
+  ProcessList.insert("OpWLS");
+
   ParticleList.insert(111); // pi0
   ParticleList.insert(211); // pion+
   ParticleList.insert(-211);
@@ -31,6 +35,11 @@ WCSimTrackingAction::WCSimTrackingAction()
   ParticleList.insert(-321); // kaon-
   ParticleList.insert(311); // kaon0
   ParticleList.insert(-311); // kaon0 bar
+  //ParticleList.insert(22); // I add photons (B.Q)
+  ParticleList.insert(11); // e-
+  ParticleList.insert(-11); // e+
+  ParticleList.insert(13); // mu-
+  ParticleList.insert(-13); // mu+
   // don't put gammas there or there'll be too many
 
   //TF: add protons and neutrons
@@ -40,6 +49,10 @@ WCSimTrackingAction::WCSimTrackingAction()
   percentageOfCherenkovPhotonsToDraw = 0.0;
 
   messenger = new WCSimTrackingMessenger(this);
+
+  // Max time for radioactive decay:
+  fMaxTime    = 1. * CLHEP::second;
+  fTime_birth = 0.;
 }
 
 WCSimTrackingAction::~WCSimTrackingAction(){;}
@@ -47,11 +60,10 @@ WCSimTrackingAction::~WCSimTrackingAction(){;}
 void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
   //TF: userdefined now
-  //G4float percentageOfCherenkovPhotonsToDraw = 100.0;
+  //G4double percentageOfCherenkovPhotonsToDraw = 100.0;
   // if larger than zero, will keep trajectories of many secondaries as well
   // and store them in output file. Difficult to control them all, so best only
   // use for visualization, not for storing in ROOT.
-
 
   if ( aTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()
        || G4UniformRand() < percentageOfCherenkovPhotonsToDraw/100. )
@@ -75,6 +87,25 @@ void WCSimTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
           G4EventManager::GetEventManager()->AbortCurrentEvent();
           G4EventManager::GetEventManager()->GetNonconstCurrentEvent()->SetEventAborted();
       }
+  }
+
+  // Kill nucleus generated after TrackID 1
+  G4ParticleDefinition* particle = aTrack->GetDefinition();
+  G4String name   = particle->GetParticleName();
+  G4double fCharge = particle->GetPDGCharge();
+
+  G4Track* tr = (G4Track*) aTrack;
+  if ( aTrack->GetTrackID() == 1 ) {
+  	// Re-initialize time
+  	fTime_birth = 0;
+  	// Ask G4 to kill the track when all secondary are done (will exclude other decays)
+  	if ( fCharge > 2. )
+  		tr->SetTrackStatus(fStopButAlive);
+  }
+
+  if ( aTrack->GetTrackID() == 2 ) {
+  	// First track of the decay save time
+  	fTime_birth = aTrack->GetGlobalTime(); 
   }
 }
 
@@ -112,13 +143,14 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
     // is it a primary ?
     // is the process in the set ? 
     // is the particle in the set ?
-    // is it a gamma 
+    // is it a gamma above 1 MeV ?
+    // is it a mu- capture at rest above 1 MeV ?
     // due to lazy evaluation of the 'or' in C++ the order is important
     if( aTrack->GetParentID()==0 
 	|| ((creatorProcess!=0) && ProcessList.count(creatorProcess->GetProcessName()))
 	|| (ParticleList.count(aTrack->GetDefinition()->GetPDGEncoding()))
 	|| (aTrack->GetDefinition()->GetPDGEncoding()==22 && aTrack->GetTotalEnergy() > 1.0*MeV)
-      || (creatorProcess->GetProcessName() == "muMinusCaptureAtRest" && aTrack->GetTotalEnergy() > 1.0*MeV)
+	|| (creatorProcess->GetProcessName() == "muMinusCaptureAtRest" && aTrack->GetTotalEnergy() > 1.0*MeV)
       )
     {
     // if so the track is worth saving
@@ -171,8 +203,9 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
       { 
 	WCSimTrackInformation* infoSec = new WCSimTrackInformation(anInfo);
 	if(anInfo->isSaved()){ // Parent is primary, so we want start pos & time of this secondary
-        infoSec->SetPhotonStartTime((*secondaries)[i]->GetGlobalTime());
-        infoSec->SetPhotonStartPos((*secondaries)[i]->GetPosition());
+		infoSec->SetPhotonStartTime((*secondaries)[i]->GetGlobalTime());
+		infoSec->SetPhotonStartPos((*secondaries)[i]->GetPosition());
+		infoSec->SetPhotonStartDir((*secondaries)[i]->GetMomentumDirection());
 	}
 	infoSec->WillBeSaved(false); // ADDED BY MFECHNER, temporary, 30/8/06
 	(*secondaries)[i]->SetUserInformation(infoSec);
@@ -208,7 +241,6 @@ void WCSimTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
       }
   }
 }
-
 
 
 

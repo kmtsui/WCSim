@@ -24,6 +24,10 @@ public:
   G4double GetRgcff() {return rgcff;}
   void SetRgcff(G4double rparam) {rgcff=rparam;}
 
+  //Added by B.Q 2018/07/25
+  G4double GetQeff() {return qeff;}
+  void SetQeff(G4double rparam) {qeff=rparam;}
+
   G4double GetMieff() {return mieff;}
   void SetMieff(G4double rparam) {mieff=rparam;}
 
@@ -32,6 +36,20 @@ public:
 
   G4int GetCathodePara() {return cathodepara;}
   void SetCathodePara(G4double rparam) {cathodepara=rparam;}
+  //Added by TD 2019/06/22
+  G4double GetTtsff() {return ttsff;}
+  void SetTtsff(G4double rparam) {ttsff=rparam;}
+
+  //TD 2019.7.16
+  G4double GetPMTSatur() {return pmtsatur;}
+  void SetPMTSatur(G4double rparam) {pmtsatur=rparam;}
+  
+// TD 2019.6.26
+  // G4double GetQoiff() {return qoiff;}
+  // void SetQoiff(G4double rparam) {qoiff=rparam;}
+  
+  // G4double GetNLTinfo() {return nltinfo;}
+  // void SetNLTinfo(G4double rparam) {nltinfo=rparam;}
 
   //For Top Veto - jl145
   G4double GetTVSpacing() {return tvspacing;}
@@ -41,6 +59,12 @@ public:
   void SetTopVeto(G4double tparam) {topveto=tparam;}
 
   void SaveOptionsToOutput(WCSimRootOptions * wcopt);
+
+  G4double GetWCODWLSCladdingReflectivity() {return WCODWLSCladdingReflectivity;}
+  void SetWCODWLSCladdingReflectivity(G4double tparam) {WCODWLSCladdingReflectivity=tparam;}
+
+  G4double GetWCODTyvekReflectivity() {return WCODTyvekReflectivity;}
+  void SetWCODTyvekReflectivity(G4double tparam) {WCODTyvekReflectivity=tparam;}
 
 private:
 
@@ -55,7 +79,11 @@ private:
   G4double bsrff;
   G4double abwff;
   G4double rgcff;
+  G4double qeff;
   G4double mieff;
+  G4double ttsff;
+  // G4double qoiff; // TD 2019.6.26
+  G4double pmtsatur;
 
   // PMT photocathode surface properties
   G4int pmtsurftype;
@@ -64,6 +92,9 @@ private:
   //For Top Veto - jl145
   G4double tvspacing;
   G4bool topveto;
+
+  G4double WCODWLSCladdingReflectivity;
+  G4double WCODTyvekReflectivity;
 
 };
 

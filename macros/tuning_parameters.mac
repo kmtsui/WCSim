@@ -18,3 +18,8 @@
 # Choice of photocathode optical parameters.
 # 0 = (Seems to be) SK. 1 = KCsCb, 2 = RbCsCb from Model2's paper
 /WCSim/tuning/cathodepara 0
+
+/WCSim/tuning/WCODWLSCladdingReflectivity 0.90
+/WCSim/tuning/WCODTyvekReflectivity 0.90
+
+

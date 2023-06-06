@@ -147,9 +147,10 @@ void WCSimPhysicsListFactory::InitializeList(){
       G4cout << "RegisterPhysics: " << elem->GetPhysicsName() << G4endl;
       RegisterPhysics(elem);
     }
-    G4cout << "RegisterPhysics: OpticalPhysics" << G4endl; 
-    // RegisterPhysics(new G4OpticalPhysics());
-    RegisterPhysics(new WCSimOpticalPhysics());
+    G4cout << "RegisterPhysics: OpticalPhysics" << G4endl;
+    WCSimOpticalPhysics* opticalPhysics = new WCSimOpticalPhysics();
+    RegisterPhysics(opticalPhysics);
+    opticalPhysics->SetWLSTimeProfile("exponential");
     
     // Add Radioactive Decay:
     G4cout << "RegisterPhysics: RadioactiveDecayPhysics" << G4endl;
