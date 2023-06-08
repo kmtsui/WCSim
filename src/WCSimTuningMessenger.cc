@@ -192,21 +192,15 @@ void WCSimTuningMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
     WCSimTuningParams->SetMieff(Mieff->GetNewDoubleValue(newValue));
     G4cout << "Setting Mie scattering parameter " << Mieff->GetNewDoubleValue(newValue) << G4endl;
   }
-  if(command == PMTSurfType) {
-
-   WCSimTuningParams->SetPMTSurfType(PMTSurfType->GetNewIntValue(newValue));
-
-   printf("Setting PMT photocathode surface optical model as Model %i (0 means default dielectric model)\n",PMTSurfType->GetNewIntValue(newValue));
+  else if(command == PMTSurfType) {
+    WCSimTuningParams->SetPMTSurfType(PMTSurfType->GetNewIntValue(newValue));
+    G4cout << "Setting PMT photocathode surface optical model as Model " << PMTSurfType->GetNewIntValue(newValue) << " (0 means default dielectric model)" << G4endl;
   }
 
-  if(command == CathodePara) {
-
-   WCSimTuningParams->SetCathodePara(CathodePara->GetNewIntValue(newValue));
-
-   printf("Setting PMT photocathode surface parameters as Choice %i (0 = SK, 1 = KCsRb, 2 = RbCsCb)\n",CathodePara->GetNewIntValue(newValue));
+  else if(command == CathodePara) {
+    WCSimTuningParams->SetCathodePara(CathodePara->GetNewIntValue(newValue));
+    G4cout << "Setting PMT photocathode surface parameters as Choice " << CathodePara->GetNewIntValue(newValue) << " (0 = SK, 1 = KCsRb, 2 = RbCsCb)" << G4endl;
   }
-
-
 
   //jl145 - For Top Veto
 
