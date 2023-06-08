@@ -1164,9 +1164,9 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_16cShort_mPMTGeometry()
     WCPMTRadius = PMT->GetRadius();
 
 	//mPMT params go first because detector depends on it:
-	vessel_cyl_height = 38.*CLHEP::mm;    //option A, option B would be 277 mm
-	vessel_radius_curv = 342.*CLHEP::mm;  //needs to include the vessel thickness, as we construct from outside inwards.
-	vessel_radius = 254.*CLHEP::mm;
+	mPMT_vessel_cyl_height = 38.*CLHEP::mm;    //option A, option B would be 277 mm
+	mPMT_vessel_radius_curv = 342.*CLHEP::mm;  //needs to include the vessel thickness, as we construct from outside inwards.
+	mPMT_vessel_radius = 254.*CLHEP::mm;
 	dist_pmt_vessel = 8*CLHEP::mm;      
 	orientation = PERPENDICULAR;
 	mPMT_outer_material = "G4_PLEXIGLASS";
@@ -1179,7 +1179,7 @@ void WCSimDetectorConstruction::SetNuPrismBeamTest_16cShort_mPMTGeometry()
 	id_reflector_z_offset = 6.12*CLHEP::mm;
 	id_reflector_angle = 46.5*CLHEP::deg; 
 	mPMT_pmt_openingAngle = 8.3*CLHEP::deg;
-	G4double vessel_tot_height = vessel_radius + vessel_cyl_height;
+	// G4double mPMT_vessel_tot_height = mPMT_vessel_radius + mPMT_vessel_cyl_height;
 	
 	// parameters related to filling the ID mPMT
 	nID_PMTs = 19;
