@@ -15,10 +15,10 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   genCmd = new G4UIcmdWithAString("/mygen/generator",this);
   genCmd->SetGuidance("Select primary generator.");
 
-  genCmd->SetGuidance(" Available generators : muline, gun, laser, gps, rootracker, gamma-conversion");
+  genCmd->SetGuidance(" Available generators : muline, gun, laser, gps, rootracker, gamma-conversion, mPMT-LED");
   genCmd->SetParameterName("generator",true);
   genCmd->SetDefaultValue("muline");
-  genCmd->SetCandidates("muline gun laser gps rootracker, gamma-conversion");
+  genCmd->SetCandidates("muline gun laser gps rootracker, gamma-conversion, mPMT-LED");
 
   fileNameCmd = new G4UIcmdWithAString("/mygen/vecfile",this);
   fileNameCmd->SetGuidance("Select the file of vectors.");
@@ -39,12 +39,18 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   poisMeanCmd->SetParameterName("poissonMean", true);
   poisMeanCmd->SetDefaultValue(1);
 
+  mPMTLEDIdCmd = new G4UIcmdWithAnInteger("/mPMTLED/PMTid",this);
+  mPMTLEDIdCmd->SetGuidance("Set PMT id for mPMT LED source position. Defaults to 1.");
+  mPMTLEDIdCmd->SetParameterName("mPMTLEDId", true);
+  mPMTLEDIdCmd->SetDefaultValue(1);
+
 }
 
 WCSimPrimaryGeneratorMessenger::~WCSimPrimaryGeneratorMessenger()
 {
   delete genCmd;
   delete mydetDirectory;
+  delete mPMTLEDIdCmd;
 }
 
 void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String newValue)
@@ -59,6 +65,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(false);
+      myAction->SetmPMTledEvtGenerator(false);
     }
     else if ( newValue == "gun")
     {
@@ -67,6 +74,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(false);
+      myAction->SetmPMTledEvtGenerator(false);
     }
     else if ( newValue == "laser")   //T. Akiri: Addition of laser
     {
@@ -75,6 +83,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetRootrackerEvtGenerator(false);
       myAction->SetLaserEvtGenerator(true);
       myAction->SetGPSEvtGenerator(false);
+      myAction->SetmPMTledEvtGenerator(false);
     }
     else if ( newValue == "gps")
     {
@@ -84,6 +93,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(true);
       myAction->SetNeedConversion(false);	    
+      myAction->SetmPMTledEvtGenerator(false);	    
     }
     else if ( newValue == "rootracker")   //M. Scott: Addition of Rootracker events
     {
@@ -92,6 +102,7 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetGunEvtGenerator(false);
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(false);
+      myAction->SetmPMTledEvtGenerator(false);
     }
     else if ( newValue == "gamma-conversion")
     {
@@ -101,7 +112,17 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetLaserEvtGenerator(false);
       myAction->SetGPSEvtGenerator(true);
       myAction->SetNeedConversion(true);
+      myAction->SetmPMTledEvtGenerator(false);
     }	  
+    else if (newValue == "mPMT-LED")
+    {
+      myAction->SetMulineEvtGenerator(false);
+      myAction->SetGunEvtGenerator(false);
+      myAction->SetRootrackerEvtGenerator(false);
+      myAction->SetLaserEvtGenerator(false);
+      myAction->SetGPSEvtGenerator(false);
+      myAction->SetmPMTledEvtGenerator(true);
+    }
   }
 
   if( command == fileNameCmd )
@@ -135,6 +156,12 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetPoissonPMTMean(poisMeanCmd->GetNewDoubleValue(newValue));
       G4cout << "PoissonPMT mean set to: " << poisMeanCmd->GetNewDoubleValue(newValue) << G4endl;
     }
+
+  if( command == mPMTLEDIdCmd )
+    {
+      myAction->SetmPMTLEDId(mPMTLEDIdCmd->GetNewIntValue(newValue));
+      G4cout << "mPMT LED id set to: " << mPMTLEDIdCmd->GetNewIntValue(newValue) << G4endl;
+    }
 }
 
 G4String WCSimPrimaryGeneratorMessenger::GetCurrentValue(G4UIcommand* command)
@@ -153,6 +180,8 @@ G4String WCSimPrimaryGeneratorMessenger::GetCurrentValue(G4UIcommand* command)
        { cv = myAction->NeedsConversion() ? "gamma-conversion" : "gps"; }
     else if(myAction->IsUsingRootrackerEvtGenerator())
       { cv = "rootracker"; }   //M. Scott: Addition of Rootracker events
+    else if(myAction->IsUsingmPMTledEvtGenerator())
+      { cv = "mPMT-LED"; }
   }
   
   return cv;

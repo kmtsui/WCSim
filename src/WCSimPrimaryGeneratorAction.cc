@@ -8,6 +8,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4ThreeVector.hh"
+#include "G4Vector3D.hh"
 #include "G4EventManager.hh"
 #include "globals.hh"
 #include "Randomize.hh"
@@ -76,13 +77,16 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   useLaserEvt  = false;
   useGPSEvt    = false;
   useRootrackerEvt = false;
+  useMPMTledEvt = false;
   
   fEvNum = 0;
   fInputRootrackerFile = NULL;
   fNEntries = 1;
 	  
   needConversion = false;
-  foundConversion = true;	  
+  foundConversion = true;
+
+  mPMTLEDId = 1;	  
 }
 
 WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
@@ -469,6 +473,59 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
           anEvent->GetPrimaryVertex(0)->SetPrimary(secondProduct);
       }	  
     }
+  else if (useMPMTledEvt)
+    {
+      G4Transform3D tubeTransform = myDetector->GetTubeTransform(mPMTLEDId);
+      // Get tube orientation vector
+      G4Vector3D nullOrient = G4Vector3D(0,0,1);
+      G4Vector3D pmtOrientation = tubeTransform * nullOrient;
+      G4double distToPMT = 5*cm;
+      G4double xpos = tubeTransform.getTranslation().getX() + pmtOrientation.x()*distToPMT;
+      G4double ypos = tubeTransform.getTranslation().getY() + pmtOrientation.y()*distToPMT;
+      G4double zpos = tubeTransform.getTranslation().getZ() + pmtOrientation.z()*distToPMT;
+
+      //MyGPS->ClearAll();
+      //MyGPS->AddaSource(1.);
+      G4ParticleDefinition* pd = particleTable->FindParticle("opticalphoton");
+      MyGPS->SetParticleDefinition(pd);
+      MyGPS->GetCurrentSource()->GetEneDist()->SetEnergyDisType("Mono");
+      //MyGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(2.5*eV);
+
+      G4ThreeVector position(xpos,ypos,zpos);
+      MyGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point"); // may need a more realistic shape
+      MyGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(position);
+
+      // Point the source in the PMT direction
+      G4ThreeVector dirz(-pmtOrientation.x(),-pmtOrientation.y(),-pmtOrientation.z()); // local z axis in source frame
+      G4ThreeVector dirx = dirz.orthogonal();
+      G4ThreeVector diry = dirz.cross(dirx);
+      MyGPS->GetCurrentSource()->GetAngDist()->DefineAngRefAxes("angref1",dirx);
+      MyGPS->GetCurrentSource()->GetAngDist()->DefineAngRefAxes("angref2",diry);
+      // MyGPS->GetCurrentSource()->GetAngDist()->SetAngDistType("iso"); // isotropic emission for now
+      // MyGPS->GetCurrentSource()->GetAngDist()->SetMinTheta(0.);
+      // MyGPS->GetCurrentSource()->GetAngDist()->SetMaxTheta(15*deg);
+      // MyGPS->GetCurrentSource()->GetAngDist()->SetMinPhi(0.);
+      // MyGPS->GetCurrentSource()->GetAngDist()->SetMaxPhi(360*deg);
+      // MyGPS->GetCurrentSource()->SetNumberOfParticles(1000);
+
+      MyGPS->GeneratePrimaryVertex(anEvent);
+
+      G4ThreeVector P   =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();
+      G4ThreeVector vtx =anEvent->GetPrimaryVertex()->GetPosition();
+      G4double mass     =anEvent->GetPrimaryVertex()->GetPrimary()->GetMass(); // will be 0 for photon anyway, but for other gps particles not
+      G4int pdg         =anEvent->GetPrimaryVertex()->GetPrimary()->GetPDGcode();
+
+      G4ThreeVector dir  = P.unit();
+      G4double E         = std::sqrt((P.dot(P))+(mass*mass));
+
+      mode            = LASER; //actually could also be particle gun here. Gps and laser will be separate soon!!
+
+      SetVtx(vtx);
+      SetBeamEnergy(E);
+      SetBeamDir(dir);
+      SetBeamPDG(pdg);
+
+    }
 }
 
 void WCSimPrimaryGeneratorAction::SaveOptionsToOutput(WCSimRootOptions * wcopt)
@@ -492,6 +549,8 @@ G4String WCSimPrimaryGeneratorAction::GetGeneratorTypeString()
     return "laser";
   else if(useRootrackerEvt)
     return "rooTrackerEvt";
+  else if (useMPMTledEvt)
+    return "mPMT-LED";
   return "";
 }
 

@@ -81,11 +81,13 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         G4bool   useGunEvt;
         G4bool   useLaserEvt;  //T. Akiri: Laser flag
         G4bool   useGPSEvt;
+        G4bool   useMPMTledEvt;
         std::fstream inputFile;
         G4String vectorFileName;
         G4bool   GenerateVertexInRock;
         G4bool   usePoissonPMT;
         G4double poissonPMTMean;
+        G4int    mPMTLEDId;
 
         // These go with jhfNtuple
         //G4int mode;
@@ -145,6 +147,9 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         inline void SetGPSEvtGenerator(G4bool choice) { useGPSEvt = choice; }
         inline G4bool IsUsingGPSEvtGenerator()  { return useGPSEvt; }
 
+        inline void SetmPMTledEvtGenerator(G4bool choice) { useMPMTledEvt = choice; }
+        inline G4bool IsUsingmPMTledEvtGenerator()  { return useMPMTledEvt; }
+
         inline void OpenVectorFile(G4String fileName) 
         {
             if ( inputFile.is_open() ) 
@@ -166,6 +171,9 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   
         inline void SetPoissonPMTMean(G4double val){ poissonPMTMean = val; }
         inline G4double GetPoissonPMTMean(){ return poissonPMTMean; }
+
+        inline void SetmPMTLEDId(G4int val){ mPMTLEDId = val; }
+        inline G4int GetmPMTLEDId(){ return mPMTLEDId; }
 	
         inline bool IsConversionFound(){ return foundConversion; }
         inline void FoundConversion(){ foundConversion = true; }

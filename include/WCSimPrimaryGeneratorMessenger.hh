@@ -7,6 +7,7 @@ class G4UIcmdWithAString;
 class G4UIcmdWithABool;
 class G4UIcmdWithADouble;
 
+#include "G4UIcmdWithAnInteger.hh"
 #include "G4UImessenger.hh"
 #include "globals.hh"
 
@@ -32,6 +33,7 @@ class WCSimPrimaryGeneratorMessenger: public G4UImessenger
   G4UIcmdWithAString* fileNameCmd;
   G4UIcmdWithABool*   poisCmd;
   G4UIcmdWithADouble* poisMeanCmd;
+  G4UIcmdWithAnInteger* mPMTLEDIdCmd;
 
 };
 
