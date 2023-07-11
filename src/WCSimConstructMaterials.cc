@@ -214,6 +214,8 @@ void WCSimDetectorConstruction::ConstructMaterials()
   WLS_PVT->AddElement(elC, 9); // PVT
   WLS_PVT->AddElement(elH, 10);
 
+  //---Plastic scintillator from G4 database
+  G4Material* Scintillator = nist_man->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE");
 
   //** OD WLS cladding properties
   const G4int wls_od_cladding_num = 2;
@@ -1314,6 +1316,24 @@ void WCSimDetectorConstruction::ConstructMaterials()
    AcrPropTable->AddProperty("RINDEX", ENERGY_skAcrylic, RINDEX_skAcrylic, 306);
    AcrPropTable->AddProperty("ABSLENGTH", ENERGY_skAcrylic, ABSORPTION_skAcrylic, 306);
    Acrylic->SetMaterialPropertiesTable(AcrPropTable);
+
+
+   // Scintillator
+   // Material properties from /examples/extended/optical/LXe/src/LXeDetectorConstruction.cc
+   G4MaterialPropertiesTable *ScinPropTable = new G4MaterialPropertiesTable();
+   G4double scintil_Energy[4] = { 2.00 * eV, 2.87 * eV, 2.90 * eV,
+                                  3.47 * eV };
+   G4double  rIndexPstyrene[4] = { 1.5, 1.5, 1.5, 1.5 };
+   //std::vector<G4double> absorption1    = { 2. * cm, 2. * cm, 2. * cm, 2. * cm };
+   G4double  scintilAbsorption[4]    = { 1.*nm, 1.*nm, 1.*nm, 1.*nm }; // lazy way of photon detection
+   G4double  scintilFast[4]    = { 0.0, 0.0, 1.0, 1.0 };
+   ScinPropTable->AddProperty("RINDEX", scintil_Energy, rIndexPstyrene, 4);
+   ScinPropTable->AddProperty("ABSLENGTH", scintil_Energy, scintilAbsorption, 4);
+   ScinPropTable->AddProperty("SCINTILLATIONCOMPONENT1", scintil_Energy, scintilFast, 4);
+   ScinPropTable->AddConstProperty("SCINTILLATIONYIELD", 10. / keV);
+   ScinPropTable->AddConstProperty("RESOLUTIONSCALE", 1.0);
+   ScinPropTable->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 10. * ns);
+   Scintillator->SetMaterialPropertiesTable(ScinPropTable);
 
 
    //	------------- Surfaces --------------
