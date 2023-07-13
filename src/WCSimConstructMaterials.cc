@@ -1329,11 +1329,15 @@ void WCSimDetectorConstruction::ConstructMaterials()
    G4double  scintilFast[4]    = { 0.0, 0.0, 1.0, 1.0 };
    ScinPropTable->AddProperty("RINDEX", scintil_Energy, rIndexPstyrene, 4);
    ScinPropTable->AddProperty("ABSLENGTH", scintil_Energy, scintilAbsorption, 4);
-   ScinPropTable->AddProperty("SCINTILLATIONCOMPONENT1", scintil_Energy, scintilFast, 4);
+   ScinPropTable->AddProperty("FASTCOMPONENT", scintil_Energy, scintilFast, 4);
    ScinPropTable->AddConstProperty("SCINTILLATIONYIELD", 10. / keV);
    ScinPropTable->AddConstProperty("RESOLUTIONSCALE", 1.0);
-   ScinPropTable->AddConstProperty("SCINTILLATIONTIMECONSTANT1", 10. * ns);
+   ScinPropTable->AddConstProperty("FASTTIMECONSTANT", 10. * ns);
+   ScinPropTable->AddConstProperty("YIELDRATIO",1.0);
    Scintillator->SetMaterialPropertiesTable(ScinPropTable);
+   // Set the Birks Constant for the Polystyrene scintillator
+   Scintillator->GetIonisation()->SetBirksConstant(0.126 * mm / MeV);
+
 
 
    //	------------- Surfaces --------------
