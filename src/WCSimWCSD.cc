@@ -126,7 +126,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4String WCCollectionName;
   if(detectorElement=="tank") WCCollectionName = fdet->GetIDCollectionName();
   else if (detectorElement=="tankPMT2") WCCollectionName = fdet->GetIDCollectionName2();
-  else if (detectorElement=="OD") WCCollectionName = fdet->GetODCollectionName();
+  else if (detectorElement=="OD" || detectorElement=="ODScintil") WCCollectionName = fdet->GetODCollectionName();
 
   //= fdet->GetIDCollectionName();
   //WCSimPMTObject *PMT = fdet->GetPMTPointer(WCIDCollectionName);//B.Q
@@ -154,7 +154,13 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   //Optical Photon must pass through glass into PMT interior!
   // What about the other way around? TF: current interior won't keep photons alive like in reality
   // Not an issue yet, because then interior needs to be a sensitive detector, when postStepPoint is the glass.
-  if(postVol->GetName() != "InteriorWCPMT")
+  if (detectorElement=="ODScintil")
+  {
+    // special treatment for OD scintillator: accept all scintillation photons
+    if (aStep->GetTrack()->GetCreatorProcess () ->GetProcessName ()!="Scintillation")
+      return false;
+  }
+  else if(postVol->GetName() != "InteriorWCPMT")
     return false;
   
 
@@ -188,7 +194,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4int replicaNumber;
   if(detectorElement=="tank") replicaNumber = WCSimDetectorConstruction::GetTubeID(tubeTag.str());
   else if(detectorElement=="tankPMT2") replicaNumber = WCSimDetectorConstruction::GetTubeID2(tubeTag.str());
-  else if(detectorElement=="OD") replicaNumber = WCSimDetectorConstruction::GetODTubeID(tubeTag.str());
+  else if(detectorElement=="OD" || detectorElement=="ODScintil") replicaNumber = WCSimDetectorConstruction::GetODTubeID(tubeTag.str());
   else G4cout << "detectorElement not defined..." << G4endl;
 
   G4double theta_angle = 0.;
@@ -211,7 +217,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     photonQE = fdet->GetPMTQE(WCCollectionName, wavelength,1,240,660,ratio);
   }
   
-  if (G4UniformRand() <= photonQE){
+  if (G4UniformRand() <= photonQE || detectorElement=="ODScintil" ){
     
      G4double local_x = localPosition.x();
      G4double local_y = localPosition.y();
@@ -219,7 +225,7 @@ G4bool WCSimWCSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
      theta_angle = acos(fabs(local_z)/sqrt(pow(local_x,2)+pow(local_y,2)+pow(local_z,2)))/3.1415926*180.;
      effectiveAngularEfficiency = fdet->GetPMTCollectionEfficiency(theta_angle, volumeName);
 
-     if (G4UniformRand() <= effectiveAngularEfficiency || fdet->UsePMT_Coll_Eff()==0){
+     if (G4UniformRand() <= effectiveAngularEfficiency || fdet->UsePMT_Coll_Eff()==0 || detectorElement=="ODScintil"){
        //Retrieve the pointer to the appropriate hit collection. 
        //Since volumeName is the same as the SD name, this works. 
        G4SDManager* SDman = G4SDManager::GetSDMpointer();

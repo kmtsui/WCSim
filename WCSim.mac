@@ -43,6 +43,11 @@
 #/WCSim/WCgeom IWCD_mPMT_WithOD
 #/WCSim/Construct
 
+# This is the updated IWCD geometry as of 20230630, plus OD scintillator
+# Just for a cruel estimation of scintillation yield for now
+#/WCSim/WCgeom IWCD_mPMT_WithODScintil
+#/WCSim/Construct
+
 #Note that whilst you can change the number of PMTs
 # in the HK FD ID using these photocoverage parameters,
 # it is up to you to verify that you have produced

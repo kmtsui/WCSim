@@ -92,6 +92,7 @@ public:
   void SetDefaultNuPrismGeometry();
   void SetIWCDGeometry(); // IWCD with mPMTs, updated geometry as of 20230630
   void SetIWCD_WithOD_Geometry(); // Same as above with OD
+  void SetIWCD_WithODScintil_Geometry(); // Use scintillator instead of PMT in OD
   /**
      Dump the values of many variables used to define geometries including
      - radii, heights, name, etc. of the detector
@@ -487,6 +488,9 @@ private:
   G4LogicalVolume* ConstructPMT(G4String,G4String,G4String detectorElement="tank",bool WLS=false);
   G4LogicalVolume* ConstructPMTAndWLSPlate(G4String,G4String,G4String detectorElement="OD");
 
+  // Actually just scintillator now, need to implement SiPM later
+  G4LogicalVolume* ConstructScintilPMT(G4String,G4String,G4String detectorElement="ODScintil");
+
   G4LogicalVolume* ConstructCaps(G4bool);
 
   void  ConstructMaterials();
@@ -661,6 +665,11 @@ private:
   // WLS material name
   bool isWLSFilled;
   bool BuildODWLSCladding;
+
+  G4bool useScintilOD;
+  G4double WCODScintilPlatesLength;
+  G4double WCODScintilPlatesThickness;
+  G4bool BuildODScintilCladding;
 
   // ############################# //
   // # *** END OD Parameters *** # //

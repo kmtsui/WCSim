@@ -53,6 +53,8 @@ WCSimDetectorConstruction::WCSimDetectorConstruction(G4int DetConfig,
   isODConstructed = false;
   isCombinedPMTCollectionDefined = false;
 
+  useScintilOD = false;
+
   myConfiguration = DetConfig;
 
   //-----------------------------------------------------

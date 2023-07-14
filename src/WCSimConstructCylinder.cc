@@ -1154,8 +1154,8 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructCylinder()
     //-------------------------------------------------------------
     // WLS and OD PMTs Barrel Side
     // ------------------------------------------------------------
-
-    logicWCODWLSAndPMT = ConstructPMTAndWLSPlate(WCPMTODName, WCODCollectionName, "OD");
+	if (useScintilOD) logicWCODWLSAndPMT = ConstructScintilPMT(WCPMTODName, WCODCollectionName, "ODScintil");
+    else logicWCODWLSAndPMT = ConstructPMTAndWLSPlate(WCPMTODName, WCODCollectionName, "OD");
     // sphereRadius is the size along z of the logicWCODCapTyvek box containing WLS+PMT
 
     ///////////////   Barrel PMT placement

@@ -951,3 +951,166 @@ G4LogicalVolume* WCSimDetectorConstruction::ConstructPMTAndWLSPlate(G4String PMT
 
   return logicContainer;
 }
+
+//////////////////////////////////////////////////
+
+G4LogicalVolume* WCSimDetectorConstruction::ConstructScintilPMT(G4String PMTName, G4String CollectionName, G4String detectorElement){
+
+  G4String Water = "Water";
+  G4String Scintil_Material = "G4_PLASTIC_SC_VINYLTOLUENE";
+  G4String ScintilCladding_Material = "Tyvek";
+
+  // CLADDING
+  G4double CladdingWidth= 1.*mm;
+
+  // offset to have water between scintillator plate and tyvek
+  G4double Scintil_plate_offset= 1.*mm;
+
+  G4cout << " create scintillator plate with half side " << WCODScintilPlatesLength/2/m << " m, half thickness " << WCODScintilPlatesThickness/2/m << " m, cladding thickness " << CladdingWidth/m << " m, Scintil_plate_offset " << Scintil_plate_offset/m << " m" <<  G4endl;
+
+  // EVERYTHING WILL BE ORIENTATED ALONG Z-AXIS
+
+  ////////////////////////////////////////////////
+  // structure to hold the scintillator and PMT object
+  // the volume is now a cylinder of radius = the plate diagonal, i.e. sqrt(2) * (plate half side)
+  G4double PMTHolderZ[2] = {0, CladdingWidth+Scintil_plate_offset+WCODScintilPlatesThickness};
+  double plate_diagonal = sqrt(2.)*(WCODScintilPlatesLength/2. + CladdingWidth);
+  G4double PMTHolderR[2] = {plate_diagonal, plate_diagonal};
+  G4double PMTHolderr[2] = {0,0};
+
+  G4cout << " qqqqqqqqqqqqqqqqqqqqqqqqqq plate_diagonal " << plate_diagonal << G4endl;
+
+  G4Polycone* container =
+   new G4Polycone("rectangleScintil",
+                  0.0*deg,
+                  360.0*deg,
+                  2,
+                  PMTHolderZ,
+                  PMTHolderr, // R Inner
+                  PMTHolderR);// R Outer
+
+  G4LogicalVolume* logicContainer =
+      new G4LogicalVolume(container,
+                          G4Material::GetMaterial(Water),
+                          "WCODContainer",
+                          0,0,0);
+
+  G4VisAttributes* visContainer
+      = new G4VisAttributes(G4Colour(0.0, 1.0, 0.0));
+  visContainer->SetForceWireframe(true);
+
+  logicContainer->SetVisAttributes(G4VisAttributes::Invisible);
+  //// Uncomment following for scintillator visualization
+  logicContainer->SetVisAttributes(visContainer);
+
+  ////////////////////////////////////////////////
+  // Create a scintillator plate towards x,y plane 
+  // Scintillator
+  G4Box *ScintilPlateAndCladding =
+      new G4Box("ScintilPlateAndCladding",
+                (WCODScintilPlatesLength+2*CladdingWidth)/2,
+                (WCODScintilPlatesLength+2*CladdingWidth)/2,
+                WCODScintilPlatesThickness/2);
+
+
+  G4Box *ScintilPlate =
+      new G4Box("ScintilPlate",
+                WCODScintilPlatesLength/2,
+                WCODScintilPlatesLength/2,
+                WCODScintilPlatesThickness/2);
+
+  // Extruded volume for cladding
+  G4SubtractionSolid* ScintilCladding =
+      new G4SubtractionSolid("ScintilCladding", ScintilPlateAndCladding, ScintilPlate);
+
+
+  G4LogicalVolume* logicWCODScintilPlate =
+      new G4LogicalVolume(ScintilPlate,
+                          G4Material::GetMaterial(Scintil_Material),
+                          "WCODScintilPlate", 
+                          0,0,0);
+
+  G4VisAttributes* visScintil
+      = new G4VisAttributes(G4Colour(0.0, 1.0, 1.0));
+  visScintil->SetForceSolid(true);
+
+  logicWCODScintilPlate->SetVisAttributes(G4VisAttributes::Invisible);
+  //// Uncomment following for WLS visualization
+  logicWCODScintilPlate->SetVisAttributes(visScintil);
+
+
+  G4LogicalVolume* logicWCODScintlPlateCladding =
+      new G4LogicalVolume(ScintilCladding,
+                          G4Material::GetMaterial(ScintilCladding_Material),
+                          "WCODScintilPlateCladding",
+                          0,0,0);
+
+
+  G4VisAttributes* visScintilCladding
+      = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
+  visScintilCladding->SetForceSolid(true);
+
+  logicWCODScintlPlateCladding->SetVisAttributes(G4VisAttributes::Invisible);
+  //// Uncomment following for WLS visualization
+  logicWCODScintlPlateCladding->SetVisAttributes(visScintilCladding);
+
+  ////////////////////////////////////////////////
+  // PMTs
+  //G4LogicalVolume* logicWCPMT = ConstructPMT(PMTName,CollectionName,detectorElement,true);
+
+  ////////////////////////////////////////////////
+  // Ali G. : Do dat placement inda box
+  //G4VPhysicalVolume* physiWLS =
+      new G4PVPlacement(0,
+                        G4ThreeVector(0, 0, WCODScintilPlatesThickness/2 + Scintil_plate_offset),
+                        logicWCODScintilPlate,
+                        CollectionName, // "WCCellScintilPlateOD", // brute-force naming to use SD action
+                        logicContainer,
+                        false,
+                        0,
+                        checkOverlaps);
+
+  if(BuildODScintilCladding) {
+
+    //G4VPhysicalVolume* physiWLSCladding =
+      new G4PVPlacement(0,
+                        G4ThreeVector(0, 0, WCODScintilPlatesThickness/2 + Scintil_plate_offset),
+                        logicWCODScintlPlateCladding,
+                        "WCCellScintilPlateODCladding",
+                        logicContainer,
+                        false,
+                        0,
+                        checkOverlaps);
+
+    new G4LogicalSkinSurface("cladding_surf",   logicWCODScintlPlateCladding,   WlsOdOpCladdingSurface);
+  }
+
+  //G4VPhysicalVolume* physiPMT =
+      // new G4PVPlacement(0,
+      //                   G4ThreeVector(0, 0, -1.0*PMTOffset),
+      //                   logicWCPMT,
+      //                   "WCPMTOD",
+      //                   logicContainer,
+      //                   false,
+      //                   0,
+      //                   checkOverlaps);
+
+  // Instantiate a new sensitive detector
+  // and register this sensitive detector volume with the SD Manager.
+  G4SDManager* SDman = G4SDManager::GetSDMpointer();
+  G4String SDName = "/WCSim/";
+  SDName += CollectionName;
+
+  // If there is no such sensitive detector with that SDName yet,
+  // make a new one
+  if( ! SDman->FindSensitiveDetector(SDName, false) ) {
+
+    aWCPMT = new WCSimWCSD(CollectionName,SDName,this,detectorElement);
+    SDman->AddNewDetector( aWCPMT );
+  }
+
+  logicWCODScintilPlate->SetSensitiveDetector( aWCPMT );
+
+
+  return logicContainer;
+}
