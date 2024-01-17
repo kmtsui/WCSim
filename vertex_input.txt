@@ -1,0 +1,13 @@
+Example input for multi-vertex primary generator
+Each event will take one line to give a simple vertex generator
+If event number is larger than the total number of vertices, it will go back to the first vertex line and loop over.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For optical photon, PDGID = 0
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PDGID xpos(m) ypos(m) zpos(m) xdir ydir zdir KE(MeV) nParticles
+#DATASTART
+13 0 0 0 1 0 0 500 1
+0 0 1 0 1 0 0 2.5e-6 10000
+0 0 0 1 1 0 0 2.5e-6 10000
+0 0 0 1 1 0 0 2.5e-6 10000

@@ -39,12 +39,18 @@ WCSimPrimaryGeneratorMessenger::WCSimPrimaryGeneratorMessenger(WCSimPrimaryGener
   poisMeanCmd->SetParameterName("poissonMean", true);
   poisMeanCmd->SetDefaultValue(1);
 
+  multiVtxFileNameCmd = new G4UIcmdWithAString("/mygen/gps/multiVtxFile",this);
+  multiVtxFileNameCmd->SetGuidance("Select the file of for multi-vertex file.");
+  multiVtxFileNameCmd->SetGuidance(" Enter the file name of the txt file");
+  multiVtxFileNameCmd->SetParameterName("fileName",true);
+  multiVtxFileNameCmd->SetDefaultValue("multiVtxFile");
 }
 
 WCSimPrimaryGeneratorMessenger::~WCSimPrimaryGeneratorMessenger()
 {
   delete genCmd;
   delete mydetDirectory;
+  delete multiVtxFileNameCmd;
 }
 
 void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String newValue)
@@ -135,6 +141,12 @@ void WCSimPrimaryGeneratorMessenger::SetNewValue(G4UIcommand * command,G4String 
       myAction->SetPoissonPMTMean(poisMeanCmd->GetNewDoubleValue(newValue));
       G4cout << "PoissonPMT mean set to: " << poisMeanCmd->GetNewDoubleValue(newValue) << G4endl;
     }
+
+  if( command == multiVtxFileNameCmd )
+  {
+    G4cout << "Multi-vertex input set to: " << newValue << G4endl;
+    myAction->SetMultiVertexInput(newValue);
+  }
 }
 
 G4String WCSimPrimaryGeneratorMessenger::GetCurrentValue(G4UIcommand* command)

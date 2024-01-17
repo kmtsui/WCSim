@@ -22,6 +22,21 @@ class G4GeneralParticleSource;
 class G4Event;
 class WCSimPrimaryGeneratorMessenger;
 
+// simple structure to hold the vertex entries
+struct VertexEntry
+{
+    G4int pdgId;
+    G4double xpos;
+    G4double ypos;
+    G4double zpos;
+    G4double xdir;
+    G4double ydir;
+    G4double zdir;
+    G4double ke;
+    G4int nPart;
+};
+
+
 class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
     public:
@@ -34,6 +49,7 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         void OpenRootrackerFile(G4String fileName);
         void CopyRootrackerVertex(NRooTrackerVtx* nrootrackervtx);
         bool GetIsRooTrackerFileFinished(){return (fEvNum==fNEntries);}
+        void SetMultiVertexInput(G4String fileName);
 
         // Gun, laser & gps setting calls these functions to fill jhfNtuple and Root tree
         void SetVtx(G4ThreeVector i)     { vtx = i; };
@@ -86,6 +102,11 @@ class WCSimPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
         G4bool   GenerateVertexInRock;
         G4bool   usePoissonPMT;
         G4double poissonPMTMean;
+
+        // custom multi-vertex variables
+        G4bool useMultiVertex;
+        std::vector<VertexEntry> vertexEntries;
+
 
         // These go with jhfNtuple
         //G4int mode;

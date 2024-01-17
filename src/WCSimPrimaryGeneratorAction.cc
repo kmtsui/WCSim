@@ -83,6 +83,8 @@ WCSimPrimaryGeneratorAction::WCSimPrimaryGeneratorAction(
   
   needConversion = false;
   foundConversion = true;
+
+  useMultiVertex = false;
 }
 
 WCSimPrimaryGeneratorAction::~WCSimPrimaryGeneratorAction()
@@ -420,19 +422,44 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     }
   else if (useGPSEvt)
     {
+      if (useMultiVertex) // minimal workaround to use multi-vertex in the same run
+      {
+        G4int evtID = anEvent->GetEventID();
+        G4int vtxID = evtID%vertexEntries.size(); // loop over vertex entry if necessary
+        //G4cout<<"evtID = "<<evtID<<" vertexEntries.size() = "<<vertexEntries.size()<<" vtxID = "<<vtxID<<" vertexEntries[vtxID].pdgId = "<<vertexEntries[vtxID].pdgId<<G4endl;
+        if (vertexEntries[vtxID].pdgId==0) // special treatment for optical photon
+          MyGPS->GetCurrentSource()->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle("opticalphoton"));
+        else MyGPS->GetCurrentSource()->SetParticleDefinition(G4ParticleTable::GetParticleTable()->FindParticle(vertexEntries[vtxID].pdgId));
+
+        G4ThreeVector position(vertexEntries[vtxID].xpos*m,vertexEntries[vtxID].ypos*m,vertexEntries[vtxID].zpos*m);
+        MyGPS->GetCurrentSource()->GetPosDist()->SetPosDisType("Point");
+        MyGPS->GetCurrentSource()->GetPosDist()->SetCentreCoords(position);
+
+        G4ThreeVector direction(vertexEntries[vtxID].xdir,vertexEntries[vtxID].ydir,vertexEntries[vtxID].zdir);
+        MyGPS->GetCurrentSource()->GetAngDist()->SetAngDistType("planar");
+        MyGPS->GetCurrentSource()->GetAngDist()->SetParticleMomentumDirection(direction);
+
+        MyGPS->GetCurrentSource()->GetEneDist()->SetEnergyDisType("Mono");
+        MyGPS->GetCurrentSource()->GetEneDist()->SetMonoEnergy(vertexEntries[vtxID].ke*MeV);
+
+        MyGPS->GetCurrentSource()->SetNumberOfParticles(vertexEntries[vtxID].nPart);
+      }
+
       MyGPS->GeneratePrimaryVertex(anEvent);
       G4ThreeVector P   =anEvent->GetPrimaryVertex()->GetPrimary()->GetMomentum();
-      G4ThreeVector vtx =anEvent->GetPrimaryVertex()->GetPosition();
-      G4double m        =anEvent->GetPrimaryVertex()->GetPrimary()->GetMass();
+      G4ThreeVector vertex =anEvent->GetPrimaryVertex()->GetPosition();
+      G4double mass        =anEvent->GetPrimaryVertex()->GetPrimary()->GetMass();
       G4int pdg         =anEvent->GetPrimaryVertex()->GetPrimary()->GetPDGcode();
       
       G4ThreeVector dir  = P.unit();
-      G4double E         = std::sqrt((P.dot(P))+(m*m));
+      G4double E         = std::sqrt((P.dot(P))+(mass*mass));
       
-      SetVtx(vtx);
+      SetVtx(vertex);
       SetBeamEnergy(E);
       SetBeamDir(dir);
       SetBeamPDG(pdg);
+
+      //G4cout<<"vtx = "<<vertex.x()<<" "<<vertex.y()<<" "<<vertex.z()<<" pdg = "<<pdg<<" KE = "<<E-mass<<" dir = "<<dir.x()<<" "<<dir.y()<<" "<<dir.z()<<" "<<G4endl;
 
       if(needConversion) {
           G4PrimaryParticle *primaryParticle = anEvent->GetPrimaryVertex(0)->GetPrimary(0);
@@ -619,4 +646,69 @@ void WCSimPrimaryGeneratorAction::SetupBranchAddresses(NRooTrackerVtx* nrootrack
 void WCSimPrimaryGeneratorAction::CopyRootrackerVertex(NRooTrackerVtx* nrootrackervtx){
     nrootrackervtx->Copy(fTmpRootrackerVtx);
     nrootrackervtx->TruthVertexID = -999;
+}
+
+void WCSimPrimaryGeneratorAction::SetMultiVertexInput(G4String fileName)
+{
+  useMultiVertex = true;
+  vertexEntries.clear();
+
+  std::ifstream Data(fileName.data(),std::ios_base::in);
+  if (!Data)
+  {
+    G4cout<<"Vertex data file "<<fileName<<" could not be opened --> Exiting..."<<G4endl;
+    exit(-1);
+  }
+  else
+    G4cout<<"Vertex data file "<<fileName<<" is opened to read ..."<<G4endl;
+
+  std::string str, tmp;
+	G4int Column=0;
+	while (std::getline(Data, str)) {
+		if (str=="#DATASTART") break;
+	}
+	std::ifstream::pos_type SavePoint = Data.tellg();
+	std::getline(Data, str);
+	std::istringstream stream(str);
+	while (std::getline(stream,tmp,' ')) Column++;
+	if (Column!=9)
+  {
+    G4cerr<<"Number of column = "<<Column<<" which is not equal to 9. "<<G4endl;
+    G4cerr<<"Inappropriate input --> Exiting..."<<G4endl;
+    exit(-1);
+  }
+  Data.seekg(SavePoint);
+
+  G4int nVerticesRead = 0;
+  G4int pdgId, nPart;
+  G4double xpos, ypos, zpos, xdir, ydir, zdir, ke;
+  while (!Data.eof())
+  {
+    Data>>pdgId>>xpos>>ypos>>zpos>>xdir>>ydir>>zdir>>ke>>nPart;
+    VertexEntry ve;
+    ve.pdgId = pdgId;
+    ve.xpos = xpos;
+    ve.ypos = ypos;
+    ve.zpos = zpos;
+    ve.xdir = xdir;
+    ve.ydir = ydir;
+    ve.zdir = zdir;
+    ve.ke = ke;
+    ve.nPart = nPart;
+    nVerticesRead++;
+
+    vertexEntries.push_back(ve);
+
+    //G4cout<<"pdgId = "<<pdgId<<" "<<xpos<<" "<<ypos<<" "<<zpos<<G4endl;
+  }
+  Data.close();
+
+  if (nVerticesRead==0)
+  {
+    G4cerr<<"Number of vertices = 0. "<<G4endl;
+    G4cerr<<"Inappropriate input --> Exiting..."<<G4endl;
+    exit(-1);
+  }
+  else
+    G4cout<<nVerticesRead<<" vertices are read into memory"<<G4endl;
 }
