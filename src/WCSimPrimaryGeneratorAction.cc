@@ -258,176 +258,83 @@ void WCSimPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   // Do for every event
   if (useMulineEvt) {
-    if ( !inputFile.is_open() ) {
-      G4cout << "Set a vector file using the command /mygen/vecfile name"
-	     << G4endl;
-      exit(-1);
+    // hack of mulineEvt for NiCf generation
+    // Set up variables for reading an event from the custom event file.
+    const int lineSize = 200;
+  	char      inBuf[lineSize];
+  	vector<string> token(1);
+
+    // Read the initial line, which should be: EVENT (#)
+  	token = readInLine(inputFile, lineSize, inBuf);
+    if(token.size() == 0) {
+      G4cout << "End of custom event file" << G4endl;
     }
-
-    // The original documentation describing the nuance text format can be found here:
-    // http://neutrino.phy.duke.edu/nuance-format/
-    //
-    // Information specific to WCSim can be found in the file Nuance_MC_Format.txt in
-    // the doc/ directory.
-    // The format must be strictly adhered to for it to be processed correctly.
-    // The lines and their meanings from begin through info are fixed, and then
-    // a variable number of tracks may follow.
-    //
-    if (useNuanceTextFormat) {
-      const int lineSize=1000;
-      char      inBuf[lineSize];
-      vector<string> token(1);
-
-      token = readInLine(inputFile, lineSize, inBuf);
-
-      if (token.size() == 0 || token[0] == "stop") {
-	G4cout << "End of nuance vector file - run terminated..."<< G4endl;
-	G4RunManager::GetRunManager()-> AbortRun();
-      }
-      else if (token[0] != "begin") {
-	G4cout << "unexpected line begins with \"" << token[0]
-	       << "\"we were expecting \" begin \"" << G4endl;
-      }
-      else {   // normal parsing begins here
-	// Read the nuance line
-	// should be nuance <value>
-	// but could be just
-	// nuance
-	// if value is given set mode to equal it.
-
-	token = readInLine(inputFile, lineSize, inBuf);
-	int iVertex=0;
-	while(token[0]=="nuance" && iVertex < MAX_N_VERTICES) {
-	  if(token.size()>1)
-	    mode[iVertex] = atoi(token[1]);
-
-	  // Read the Vertex line
-	  // - this contains position and time
-	  token = readInLine(inputFile, lineSize, inBuf);
-	  vtxs[iVertex] = G4ThreeVector(atof(token[1])*cm,
-					atof(token[2])*cm,
-					atof(token[3])*cm);
-	  G4double VertexTime=atof(token[4])*fTimeUnit;
-	  vertexTimes[iVertex]=VertexTime;
-
-	  // true : Generate vertex in Rock , false : Generate vertex in WC tank
-	  SetGenerateVertexInRock(false);
-
-	  // Next we read the incoming neutrino and target
-
-	  // First, the neutrino line
-	  token=readInLine(inputFile, lineSize, inBuf);
-	  beampdgs[iVertex] = atoi(token[1]);
-	  beamenergies[iVertex] = atof(token[2])*MeV;
-	  beamdirs[iVertex] = G4ThreeVector(atof(token[3]),
-					    atof(token[4]),
-					    atof(token[5]));
-	  G4cout << "Neutrino generated is = "<< beampdgs[iVertex]<<", Enu = " << beamenergies[iVertex] << " and interacts through mode = " << mode[iVertex] << G4endl;
-
-	  // Now read the target line
-
-	  //B.Q: there can be some cases (2p2h i.e. neut mode = 2) where there are 2 targets. The while loop is added for this purpose.
-	  // Note that the information of the 1st target is lost
-	  while ( token=readInLine(inputFile, lineSize, inBuf),
-		  token[0] == "track" ) {
-	    targetpdgs[iVertex] = atoi(token[1]);
-	    targetenergies[iVertex] = atof(token[2])*MeV;
-	    targetdirs[iVertex] = G4ThreeVector(atof(token[3]),
-						atof(token[4]),
-						atof(token[5]));
-	    G4cout << "Target hit is = "<< targetpdgs[iVertex] <<", E = " << targetenergies[iVertex] << G4endl;
-	  }//loop over target lines
-
-	  // The info line is read in the exiting step of the while loop aboe
-	  // The info line is (almost) a dummy
-	  G4cout << "Vector File Record Number " << token[2] << G4endl;
-	  vecRecNumber = atoi(token[2]);
-
-	  // Now read the outgoing particles
-	  // These we will simulate.
-	  while ( token=readInLine(inputFile, lineSize, inBuf),
-		  token[0] == "track" ) {
-	    // We are only interested in the particles
-	    // that leave the nucleus, tagged by "0"
-	    if ( token[6] == "0") {
-	      G4int pdgid = atoi(token[1]);
-	      G4double energy_total = atof(token[2])*MeV;
-	      G4ThreeVector dir = G4ThreeVector(atof(token[3]),
-						atof(token[4]),
-						atof(token[5]));
-
-	      //must handle the case of an ion seperatly from other particles
-	      //check PDG code if we have an ion.
-	      //PDG code format for ions ±10LZZZAAAI
-	      if(abs(pdgid) >= 1000000000){
-		//ion
-		char strPDG[11];
-		char strA[10]={0};
-		char strZ[10]={0};
-		long int A=0,Z=0;
-		sprintf(strPDG,"%i",abs(pdgid));
-		//stop GCC complaining about string truncation
-		// - we're copying from the middle of a long string
-		// - we do terminate the string correctly below
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-truncation"
-		strncpy(strZ, &strPDG[3], 3);
-#pragma GCC diagnostic pop
-		strncpy(strA, &strPDG[6], 3);
-		strA[3]='\0';
-		strZ[3]='\0';
-		A=atoi(strA);
-		Z=atoi(strZ);
-		G4ParticleDefinition* ion;
-		ion =  ionTable->GetIon(Z, A, 0.);
-		particleGun->SetParticleDefinition(ion);
-		particleGun->SetParticleCharge(0);
-	      }//ion
-	      else {
-		//not ion
-		particleGun->
-		  SetParticleDefinition(particleTable->
-					FindParticle(pdgid));
-	      }//not ion
-
-	      G4double mass =
-		particleGun->GetParticleDefinition()->GetPDGMass();
-
-	      G4double ekin = energy_total - mass;
-	      G4cout << "Generating particle = "<< pdgid << ", E = " << energy_total << " MeV, Ec = " << ekin <<  " MeV, and dir = " << dir[0] << ", " << dir[1] << ", " << dir[2] << G4endl;
-	      particleGun->SetParticleEnergy(ekin);
-	      particleGun->SetParticlePosition(vtxs[iVertex]);
-	      particleGun->SetParticleMomentumDirection(dir);
-	      particleGun->SetParticleTime(VertexTime);
-	      particleGun->GeneratePrimaryVertex(anEvent);
-	    }//token[6] == "0" (particle exiting nucleus)
-	  }//loop over "track" lines
-	  iVertex++;
-	  if(iVertex > MAX_N_VERTICES)
-	    G4cout<<" CAN NOT DEAL WITH MORE THAN "<<MAX_N_VERTICES
-		  <<" VERTICES - TRUNCATING EVENT HERE "<<G4endl;
-	}//loop over vertex blocks
-	nvtxs=iVertex;
-	SetNvtxs(nvtxs);
-      }//valid file format
-    }//useNuanceTextFormat
+    else if(token[0] != "EVENT") {
+      G4cout << "Error reading custom event" << G4endl;
+    }
     else {
-      // old muline format
-      inputFile >> nuEnergy >> energy >> xPos >> yPos >> zPos
-		>> xDir >> yDir >> zDir;
 
-      G4double random_z = ((myDetector->GetWaterTubePosition())
-			   - .5*(myDetector->GetWaterTubeLength())
-			   + 1.*m + 15.0*m*G4UniformRand())/m;
-      zPos = random_z;
-      G4ThreeVector vtx = G4ThreeVector(xPos, yPos, random_z);
-      G4ThreeVector dir = G4ThreeVector(xDir,yDir,zDir);
+      // Read all particles until END is reached or too many particles are read.
+      bool evt_end = false;
+      const int MAX_PARTICLES = 1000000;
+      int nparticles = 0;
+      while(!evt_end && (nparticles < MAX_PARTICLES)) {
 
-      particleGun->SetParticleEnergy(energy*MeV);
-      particleGun->SetParticlePosition(vtx);
-      particleGun->SetParticleMomentumDirection(dir);
-      particleGun->GeneratePrimaryVertex(anEvent);
-    }//old muline format
+        // Read the particle line.
+        token = readInLine(inputFile, lineSize, inBuf);
+
+        // If the line begins with END, this event is over.
+        if(token[0] == "END") {
+          evt_end = true;
+        }
+        else {
+
+          // Create a vertex for the specified particle assuming line format:
+          // PARTICLE x y z t p dx dy dz
+          G4int pdgid = atoi(token[1]);
+          G4ThreeVector vtx = G4ThreeVector(atof(token[2]),
+                                            atof(token[3]),
+                                            atof(token[4]));
+          G4double time = atof(token[5]);
+          G4double momentum = atof(token[6]);
+	        G4String particleName;
+
+  		    G4ThreeVector dir = G4ThreeVector(atof(token[7]),
+  						      atof(token[8]),
+  						      atof(token[9]));
+
+  		    if(pdgid == 22){
+            if(momentum < 100*eV){
+              particleGun->SetParticleDefinition(particleTable->FindParticle(particleName="opticalphoton"));
+            }
+			      else {
+				      particleGun->SetParticleDefinition(particleTable->FindParticle(particleName="gamma"));
+		    	  }
+		      }
+          else {
+            particleGun->SetParticleDefinition(particleTable->FindParticle(pdgid));
+          }
+
+  		    G4double mass =
+  		      particleGun->GetParticleDefinition()->GetPDGMass();
+
+  		    G4double ekin = sqrt(momentum*momentum + mass*mass) - mass;
+
+  		    particleGun->SetParticleEnergy(ekin);
+  		    G4cout << "Particle: " << pdgid << " KE: " << ekin << G4endl;
+  		    particleGun->SetParticlePosition(vtx);
+          particleGun->SetParticleTime(time);
+  		    particleGun->SetParticleMomentumDirection(dir);
+  		    particleGun->GeneratePrimaryVertex(anEvent);
+
+          // Count the particle.
+          nparticles++;
+          if(nparticles >= MAX_PARTICLES) {
+            G4cout << "Error: read too many particles..." << G4endl;
+          }
+        }
+      }
+    }
   }//useMuLineEvt
   
   else if(useAmBeEvt){ // Diego Costas (diego.costas.rodriguez@usc.es) 2023
